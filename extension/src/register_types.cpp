@@ -20,6 +20,7 @@
 #include "nodes/decorators/beehave_delayer.h"
 #include "nodes/decorators/beehave_repeater.h"
 #include "nodes/decorators/beehave_until_fail.h"
+#include "nodes/composites/beehave_composite.h"
 
 using namespace godot;
 
@@ -50,7 +51,7 @@ void initialize_beehave_types(ModuleInitializationLevel p_level) {
 	ClassDB::register_class<BeehaveUntilFail>();
 
 	// composites
-	// TODO
+	ClassDB::register_abstract_class<BeehaveComposite>();
 }
 
 void uninitialize_beehave_types(ModuleInitializationLevel p_level) {

@@ -1,5 +1,5 @@
 /**************************************************************************/
-/*  beehave_selector.h                                                    */
+/*  beehave_composite.h                                                   */
 /**************************************************************************/
 /*                         This file is part of:                          */
 /*                               BEEHAVE                                  */
@@ -27,13 +27,20 @@
 /* SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.                 */
 /**************************************************************************/
 
-#ifndef BEEHAVE_SELECTOR_H
-#define BEEHAVE_SELECTOR_H
+#ifndef BEEHAVE_COMPOSITE_H
+#define BEEHAVE_COMPOSITE_H
 
-
+#include "nodes/beehave_tree_node.h"
 
 namespace godot {
 
-}
+class BeehaveComposite : public BeehaveTreeNode {
+GDCLASS(BeehaveComposite, BeehaveTreeNode);
 
-#endif
+public:
+	BeehaveComposite();
+	~BeehaveComposite();
+};
+} //namespace godot
+
+#endif //BEEHAVE_COMPOSITE_H

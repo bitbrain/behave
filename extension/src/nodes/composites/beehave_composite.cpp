@@ -1,5 +1,5 @@
 /**************************************************************************/
-/*  beehave_selector.h                                                    */
+/*  beehave_composite.cpp                                                 */
 /**************************************************************************/
 /*                         This file is part of:                          */
 /*                               BEEHAVE                                  */
@@ -27,13 +27,14 @@
 /* SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.                 */
 /**************************************************************************/
 
-#ifndef BEEHAVE_SELECTOR_H
-#define BEEHAVE_SELECTOR_H
+#include "beehave_composite.h"
 
+using namespace godot;
 
-
-namespace godot {
+BeehaveComposite::BeehaveComposite() {
 
 }
 
-#endif
+BeehaveComposite::~BeehaveComposite() {
+
+}
