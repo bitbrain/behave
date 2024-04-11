@@ -30,10 +30,24 @@
 #ifndef BEEHAVE_SELECTOR_H
 #define BEEHAVE_SELECTOR_H
 
-
+#include "nodes/composites/beehave_composite.h"
 
 namespace godot {
 
-}
+class BeehaveSelector : public BeehaveComposite {
+	GDCLASS(BeehaveSelector, BeehaveComposite);
 
-#endif
+	int last_execution_index = 0;
+
+protected:
+	static void _bind_methods();
+
+public:
+	BeehaveSelector();
+	~BeehaveSelector();
+
+	BeehaveTickStatus tick(Ref<BeehaveContext> context);
+};
+}// namespace godot
+
+#endif // BEEHAVE_SELECTOR_H
