@@ -103,3 +103,33 @@ func test_rename_child() -> void:
 				.contains_key_value(node, weights_before[node])
 	
 	runner.simulate_frames(10) # Everything should work fine afterwards.
+
+func test_scene_reload() -> void:
+	var scene = create_scene()
+	var runner := scene_runner(scene)
+	
+	runner.set_time_factor(100.0)
+	
+	# set the Idle weight to non-default
+	scene.set_weights(2, 3, 4, 5)
+	
+	var sequence_random: SequenceRandomComposite = scene.sequence_random
+	var weights_before: Dictionary = sequence_random._weights.duplicate()
+	
+	runner.simulate_frames(10)
+	
+	var beehave_tree = runner.find_child("BeehaveTree")
+	beehave_tree.remove_child(sequence_random)
+	
+	runner.simulate_frames(10)
+	
+	beehave_tree.add_child(sequence_random)
+	
+	# Weights should be exactly the same.
+	var children = weights_before.keys()
+	for node in children:
+		assert_dict(sequence_random._weights)\
+				.contains_key_value(node, weights_before[node])
+	
+	runner.simulate_frames(10) # Everything should work fine afterwards.
+	
