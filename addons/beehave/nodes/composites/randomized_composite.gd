@@ -22,6 +22,7 @@ const WEIGHTS_PREFIX = "Weights/"
 		notify_property_list_changed()
 
 var _weights: Dictionary
+var _exiting_tree: bool
 
 
 func _ready():
@@ -111,22 +112,40 @@ func _update_weights(children: Array[Node]) -> void:
 	notify_property_list_changed()
 
 
+func _exit_tree() -> void:
+	_exiting_tree = true
+
+
+func _enter_tree() -> void:
+	_exiting_tree = false
+
+
 func _on_child_entered_tree(node: Node):
 	_update_weights(get_children())
 
 	var renamed_callable = _on_child_renamed.bind(node.name, node)
 	if not node.renamed.is_connected(renamed_callable):
 		node.renamed.connect(renamed_callable)
+	
+	if not node.tree_exited.is_connected(_on_child_tree_exited):
+		node.tree_exited.connect(_on_child_tree_exited.bind(node))
 
 
 func _on_child_exiting_tree(node: Node):
 	var renamed_callable = _on_child_renamed.bind(node.name, node)
 	if node.renamed.is_connected(renamed_callable):
 		node.renamed.disconnect(renamed_callable)
+
+
+func _on_child_tree_exited(node: Node) -> void:
+	# don't erase the individual child if the whole tree is exiting together
+	if not _exiting_tree:
+		var children = get_children()
+		children.erase(node)
+		_update_weights(children)
 	
-	var children = get_children()
-	children.erase(node)
-	_update_weights(children)
+	if node.tree_exited.is_connected(_on_child_tree_exited):
+		node.tree_exited.disconnect(_on_child_tree_exited)
 
 
 func _on_child_renamed(old_name: String, renamed_child: Node):
