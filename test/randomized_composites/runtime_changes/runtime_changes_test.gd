@@ -116,12 +116,12 @@ func test_scene_reload() -> void:
 	var sequence_random: SequenceRandomComposite = scene.sequence_random
 	var weights_before: Dictionary = sequence_random._weights.duplicate()
 	
-	runner.simulate_frames(10)
+	await runner.simulate_frames(10)
 	
 	var beehave_tree = runner.find_child("BeehaveTree")
 	beehave_tree.remove_child(sequence_random)
 	
-	runner.simulate_frames(10)
+	await runner.simulate_frames(10)
 	
 	beehave_tree.add_child(sequence_random)
 	
@@ -131,5 +131,5 @@ func test_scene_reload() -> void:
 		assert_dict(sequence_random._weights)\
 				.contains_key_value(node, weights_before[node])
 	
-	runner.simulate_frames(10) # Everything should work fine afterwards.
+	await runner.simulate_frames(10) # Everything should work fine afterwards.
 	
