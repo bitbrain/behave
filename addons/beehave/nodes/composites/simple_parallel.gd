@@ -84,7 +84,9 @@ func before_run(actor: Node, blackboard:Blackboard) -> void:
 	secondary_node_repeat_left = secondary_node_repeat_count
 	super(actor, blackboard)
 
-func interrupt(actor: Node, blackboard: Blackboard) -> void:	
+func interrupt(actor: Node, blackboard: Blackboard) -> void:
+	if not main_task_finished:
+		get_child(0).interrupt(actor, blackboard)
 	if secondary_node_running:
 		get_child(1).interrupt(actor, blackboard)
 	_reset()
