@@ -78,7 +78,7 @@ func tick(actor, blackboard: Blackboard):
 				else:
 					secondary_node_running = true	
 
-	return delayed_result
+	return RUNNING
 
 func before_run(actor: Node, blackboard:Blackboard) -> void:
 	secondary_node_repeat_left = secondary_node_repeat_count
