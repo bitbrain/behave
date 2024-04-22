@@ -1,5 +1,5 @@
 @tool
-@icon("../../icons/sequence.svg")
+@icon("../../icons/simple_parallel.svg")
 class_name SimpleParallelComposite extends Composite
 
 ## Simple Parallel nodes will attampt to execute all chidren at same time and 
