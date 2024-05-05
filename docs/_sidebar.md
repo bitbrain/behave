@@ -7,7 +7,7 @@
     * [<img src="/beehave/assets/icons/category_composite.svg"> Composites](/manual/composites.md)
         * [<img src="/beehave/assets/icons/selector.svg"> Selector](/manual/selector.md)
         * [<img src="/beehave/assets/icons/sequence.svg"> Sequence](/manual/sequence.md)
-        * [<img src="/beehave/assets/icons/simple_parallel.svg"> Sequence](/manual/simple_parallel.md)
+        * [<img src="/beehave/assets/icons/simple_parallel.svg"> Simple Parallel](/manual/simple_parallel.md)
     * [<img src="/beehave/assets/icons/category_decorator.svg"> Decorators](/manual/decorators.md)
     * [Debugging](/manual/debugging.md)
     * [Performance](/manual/performance.md)
