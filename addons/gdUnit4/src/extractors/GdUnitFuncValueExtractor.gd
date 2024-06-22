@@ -1,15 +1,15 @@
 # This class defines a value extractor by given function name and args
 extends GdUnitValueExtractor
 
-var _func_names :Array
+var _func_names :PackedStringArray
 var _args :Array
 
-func _init(func_name :String, p_args :Array):
+func _init(func_name :String, p_args :Array) -> void:
 	_func_names = func_name.split(".")
 	_args = p_args
 
 
-func func_names() -> Array:
+func func_names() -> PackedStringArray:
 	return _func_names
 
 
@@ -18,7 +18,7 @@ func args() -> Array:
 
 
 # Extracts a value by given `func_name` and `args`,
-# Allows to use a chained list of functions setarated ba a dot. 
+# Allows to use a chained list of functions setarated ba a dot.
 #  e.g. "func_a.func_b.name"
 #  do calls instance.func_a().func_b().name() and returns finally the name
 # If a function returns an array, all elements will by collected in a array
@@ -27,13 +27,13 @@ func args() -> Array:
 #
 # if the value not a Object or not accesible be `func_name` the value is converted to `"n.a."`
 # expecing null values
-func extract_value(value):
+func extract_value(value :Variant) -> Variant:
 	if value == null:
 		return null
 	for func_name in func_names():
 		if GdArrayTools.is_array_type(value):
 			var values := Array()
-			for element in Array(value):
+			for element :Variant in Array(value):
 				values.append(_call_func(element, func_name))
 			value = values
 		else:
@@ -46,12 +46,12 @@ func extract_value(value):
 	return value
 
 
-func _call_func(value, func_name :String):
+func _call_func(value :Variant, func_name :String) -> Variant:
 	# for array types we need to call explicit by function name, using funcref is only supported for Objects
 	# TODO extend to all array functions
 	if GdArrayTools.is_array_type(value) and func_name == "empty":
 		return value.is_empty()
-	
+
 	if is_instance_valid(value):
 		# extract from function
 		if value.has_method(func_name):
@@ -60,7 +60,7 @@ func _call_func(value, func_name :String):
 				return value.call(func_name) if args().is_empty() else value.callv(func_name, args())
 		else:
 			# if no function exists than try to extract form parmeters
-			var parameter = value.get(func_name)
+			var parameter :Variant = value.get(func_name)
 			if parameter != null:
 				return parameter
 	# nothing found than return 'n.a.'

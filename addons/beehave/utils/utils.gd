@@ -1,5 +1,6 @@
 @tool
 
+
 static func get_plugin() -> EditorPlugin:
 	var tree: SceneTree = Engine.get_main_loop()
 	return tree.get_root().get_child(0).get_node_or_null("BeehavePlugin")

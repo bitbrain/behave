@@ -6,7 +6,7 @@ const PATCH_VERSION = "patch_version"
 var _version :GdUnit4Version
 
 
-func _init(version_ :GdUnit4Version):
+func _init(version_ :GdUnit4Version) -> void:
 	_version = version_
 
 

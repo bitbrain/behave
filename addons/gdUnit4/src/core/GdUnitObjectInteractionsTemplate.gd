@@ -5,81 +5,86 @@ var __saved_interactions := Dictionary()
 var __verified_interactions := Array()
 
 
-func __save_function_interaction(args :Array) -> void:
-	var matcher := GdUnitArgumentMatchers.to_matcher(args, true)
-	for key in __saved_interactions.keys():
-		if matcher.is_match(key):
-			__saved_interactions[key] += 1
+func __save_function_interaction(function_args :Array[Variant]) -> void:
+	var __matcher := GdUnitArgumentMatchers.to_matcher(function_args, true)
+	for __index in __saved_interactions.keys().size():
+		var __key :Variant = __saved_interactions.keys()[__index]
+		if __matcher.is_match(__key):
+			__saved_interactions[__key] += 1
 			return
-	__saved_interactions[args] = 1
+	__saved_interactions[function_args] = 1
 
 
 func __is_verify_interactions() -> bool:
 	return __expected_interactions != -1
 
 
-func __do_verify_interactions(times :int = 1) -> Object:
-	__expected_interactions = times
+func __do_verify_interactions(interactions_times :int = 1) -> Object:
+	__expected_interactions = interactions_times
 	return self
 
 
-func __verify_interactions(args :Array):
-	var summary := Dictionary()
-	var total_interactions := 0
-	var matcher := GdUnitArgumentMatchers.to_matcher(args, true)
-	for key in __saved_interactions.keys():
-		if matcher.is_match(key):
-			var interactions :int = __saved_interactions.get(key, 0)
-			total_interactions += interactions
-			summary[key] = interactions
+func __verify_interactions(function_args :Array[Variant]) -> void:
+	var __summary := Dictionary()
+	var __total_interactions := 0
+	var __matcher := GdUnitArgumentMatchers.to_matcher(function_args, true)
+	for __index in __saved_interactions.keys().size():
+		var __key :Variant = __saved_interactions.keys()[__index]
+		if __matcher.is_match(__key):
+			var __interactions :int = __saved_interactions.get(__key, 0)
+			__total_interactions += __interactions
+			__summary[__key] = __interactions
 			# add as verified
-			__verified_interactions.append(key)
-	
-	var gd_assert := GdUnitAssertImpl.new("")
-	if total_interactions != __expected_interactions:
-		var expected_summary = {args : __expected_interactions}
-		var error_message :String
-		# if no interactions macht collect not verified interactions for failure report
-		if summary.is_empty():
-			var current_summary = __verify_no_more_interactions()
-			error_message = GdAssertMessages.error_validate_interactions(current_summary, expected_summary)
+			__verified_interactions.append(__key)
+
+	var __gd_assert := GdUnitAssertImpl.new("")
+	if __total_interactions != __expected_interactions:
+		var __expected_summary := {function_args : __expected_interactions}
+		var __error_message :String
+		# if no __interactions macht collect not verified __interactions for failure report
+		if __summary.is_empty():
+			var __current_summary := __verify_no_more_interactions()
+			__error_message = GdAssertMessages.error_validate_interactions(__current_summary, __expected_summary)
 		else:
-			error_message = GdAssertMessages.error_validate_interactions(summary, expected_summary)
-		gd_assert.report_error(error_message)
+			__error_message = GdAssertMessages.error_validate_interactions(__summary, __expected_summary)
+		__gd_assert.report_error(__error_message)
 	else:
-		gd_assert.report_success()
+		__gd_assert.report_success()
 	__expected_interactions = -1
 
 
 func __verify_no_interactions() -> Dictionary:
-	var summary := Dictionary()
+	var __summary := Dictionary()
 	if not __saved_interactions.is_empty():
-		for func_call in __saved_interactions.keys():
-			summary[func_call] = __saved_interactions[func_call]
-	return summary
+		for __index in __saved_interactions.keys().size():
+			var func_call :Variant = __saved_interactions.keys()[__index]
+			__summary[func_call] = __saved_interactions[func_call]
+	return __summary
 
 
 func __verify_no_more_interactions() -> Dictionary:
-	var summary := Dictionary()
-	var called_functions :Array = __saved_interactions.keys()
+	var __summary := Dictionary()
+	var called_functions :Array[Variant] = __saved_interactions.keys()
 	if called_functions != __verified_interactions:
 		# collect the not verified functions
 		var called_but_not_verified := called_functions.duplicate()
-		for verified_function in __verified_interactions:
-			called_but_not_verified.erase(verified_function)
-		
-		for not_verified in called_but_not_verified:
-			summary[not_verified] = __saved_interactions[not_verified]
-	return summary
+		for __index in __verified_interactions.size():
+			called_but_not_verified.erase(__verified_interactions[__index])
+
+		for __index in called_but_not_verified.size():
+			var not_verified :Variant = called_but_not_verified[__index]
+			__summary[not_verified] = __saved_interactions[not_verified]
+	return __summary
 
 
 func __reset_interactions() -> void:
 	__saved_interactions.clear()
 
 
-func __filter_vargs(arg_values :Array) -> Array:
-	var filtered := Array()
-	for arg in arg_values:
+func __filter_vargs(arg_values :Array[Variant]) -> Array[Variant]:
+	var filtered :Array[Variant] = []
+	for __index in arg_values.size():
+		var arg :Variant = arg_values[__index]
 		if typeof(arg) == TYPE_STRING and arg == GdObjects.TYPE_VARARG_PLACEHOLDER_VALUE:
 			continue
 		filtered.append(arg)

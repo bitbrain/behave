@@ -7,6 +7,7 @@ extends GdUnitTestSuite
 # TestSuite generated from
 const __source = "res://addons/beehave/nodes/beehave_tree.gd"
 
+
 func create_scene() -> Node2D:
 	return auto_free(load("res://test/unit_test_scene.tscn").instantiate())
 
@@ -21,6 +22,7 @@ func test_normal_tick() -> void:
 	scene.beehave_tree._physics_process(1.0)
 	assert_that(scene.beehave_tree.status).is_equal(BeehaveNode.SUCCESS)
 
+
 func test_low_tick_rate() -> void:
 	var scene = create_scene()
 	scene_runner(scene)
@@ -32,6 +34,7 @@ func test_low_tick_rate() -> void:
 	scene.beehave_tree._physics_process(1.0)
 	assert_that(scene.beehave_tree.status).is_equal(BeehaveNode.SUCCESS)
 
+
 func test_low_tick_rate_last_tick() -> void:
 	var scene = create_scene()
 	scene_runner(scene)
@@ -42,6 +45,7 @@ func test_low_tick_rate_last_tick() -> void:
 	scene.beehave_tree._physics_process(1.0)
 	assert_that(scene.beehave_tree.status).is_equal(BeehaveNode.SUCCESS)
 
+
 func test_nothing_running_before_first_tick() -> void:
 	var scene = create_scene()
 	scene_runner(scene)
@@ -49,13 +53,15 @@ func test_nothing_running_before_first_tick() -> void:
 	assert_that(scene.beehave_tree.get_last_condition()).is_null()
 	assert_that(scene.beehave_tree.get_last_condition_status()).is_equal("")
 
+
 func test_get_last_condition() -> void:
 	var scene = create_scene()
 	var runner := scene_runner(scene)
 	await runner.simulate_frames(100)
 	assert_that(scene.beehave_tree.get_running_action()).is_null()
 	assert_that(scene.beehave_tree.get_last_condition()).is_not_null()
-	assert_that(scene.beehave_tree.get_last_condition_status()).is_equal('SUCCESS')
+	assert_that(scene.beehave_tree.get_last_condition_status()).is_equal("SUCCESS")
+
 
 func test_disabled() -> void:
 	var scene = create_scene()

@@ -8,20 +8,19 @@ var _test_name :StringName = ""
 var _call_stage :bool
 
 
-func _init(call_stage := true):
+func _init(call_stage := true) -> void:
 	_call_stage = call_stage
 
 
 func _execute(context :GdUnitExecutionContext) -> void:
 	var test_suite := context.test_suite
-	
 	if _call_stage:
 		@warning_ignore("redundant_await")
 		await test_suite.after_test()
 	# unreference last used assert form the test to prevent memory leaks
 	GdUnitThreadManager.get_current_context().set_assert(null)
 	await context.gc()
-	
+	await context.error_monitor_stop()
 	if context.test_case.is_skipped():
 		fire_test_skipped(context)
 	else:
@@ -30,7 +29,7 @@ func _execute(context :GdUnitExecutionContext) -> void:
 		context.test_case.dispose()
 
 
-func set_test_name(test_name :StringName):
+func set_test_name(test_name :StringName) -> void:
 	_test_name = test_name
 
 
@@ -39,7 +38,7 @@ func fire_test_ended(context :GdUnitExecutionContext) -> void:
 	var test_name := context._test_case_name if _test_name.is_empty() else _test_name
 	var reports := collect_reports(context)
 	var orphans := collect_orphans(context, reports)
-	
+
 	fire_event(GdUnitEvent.new()\
 		.test_after(test_suite.get_script().resource_path, test_suite.get_name(), test_name, context.build_report_statistics(orphans), reports))
 
@@ -55,7 +54,7 @@ func collect_orphans(context :GdUnitExecutionContext, reports :Array[GdUnitRepor
 func collect_reports(context :GdUnitExecutionContext) -> Array[GdUnitReport]:
 	var reports := context.reports()
 	var test_case := context.test_case
-	if test_case.is_interupted() and not test_case.is_expect_interupted():
+	if test_case.is_interupted() and not test_case.is_expect_interupted() and test_case.report() != null:
 		reports.push_back(test_case.report())
 	# we combine the reports of test_before(), test_after() and test() to be reported by `fire_test_ended`
 	if not context._sub_context.is_empty():
@@ -81,11 +80,11 @@ func add_orphan_report_teststage(context :GdUnitExecutionContext, reports :Array
 	return orphans
 
 
-func fire_test_skipped(context :GdUnitExecutionContext):
+func fire_test_skipped(context :GdUnitExecutionContext) -> void:
 	var test_suite := context.test_suite
 	var test_case := context.test_case
 	var test_case_name :=  context._test_case_name if _test_name.is_empty() else _test_name
-	var statistics = {
+	var statistics := {
 		GdUnitEvent.ORPHAN_NODES: 0,
 		GdUnitEvent.ELAPSED_TIME: 0,
 		GdUnitEvent.WARNINGS: false,

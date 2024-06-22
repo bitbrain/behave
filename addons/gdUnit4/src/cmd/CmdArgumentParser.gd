@@ -6,28 +6,28 @@ var _tool_name :String
 var _parsed_commands :Dictionary = Dictionary()
 
 
-func _init(p_options :CmdOptions, p_tool_name :String):
+func _init(p_options :CmdOptions, p_tool_name :String) -> void:
 	_options = p_options
 	_tool_name = p_tool_name
 
 
 func parse(args :Array, ignore_unknown_cmd := false) -> GdUnitResult:
 	_parsed_commands.clear()
-	
+
 	# parse until first program argument
 	while not args.is_empty():
 		var arg :String = args.pop_front()
 		if arg.find(_tool_name) != -1:
 			break
-	
+
 	if args.is_empty():
 		return GdUnitResult.empty()
-	
+
 	# now parse all arguments
 	while not args.is_empty():
 		var cmd :String = args.pop_front()
 		var option := _options.get_option(cmd)
-		
+
 		if option:
 			if _parse_cmd_arguments(option, args) == -1:
 				return GdUnitResult.error("The '%s' command requires an argument!" % option.short_command())
@@ -43,7 +43,7 @@ func options() -> CmdOptions:
 func _parse_cmd_arguments(option :CmdOption, args :Array) -> int:
 	var command_name := option.short_command()
 	var command :CmdCommand = _parsed_commands.get(command_name, CmdCommand.new(command_name))
-	
+
 	if option.has_argument():
 		if not option.is_argument_optional() and args.is_empty():
 			return -1

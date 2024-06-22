@@ -11,12 +11,12 @@ var _timeout := DEFAULT_TIMEOUT
 var _interrupted := false
 
 
-func _init(emitter :Object):
+func _init(emitter :Object) -> void:
 	# save the actual assert instance on the current thread context
 	var context := GdUnitThreadManager.get_current_context()
 	context.set_assert(self)
 	_signal_collector = context.get_signal_collector()
-	_line_number = GdUnitAssert._get_line_number()
+	_line_number = GdUnitAssertions.get_line_number()
 	_emitter =  emitter
 	GdAssertReports.reset_last_error_line_number()
 
@@ -27,7 +27,7 @@ func report_success() -> GdUnitAssert:
 
 
 func report_warning(message :String) -> GdUnitAssert:
-	GdAssertReports.report_warning(message, GdUnitAssert._get_line_number())
+	GdAssertReports.report_warning(message, GdUnitAssertions.get_line_number())
 	return self
 
 
@@ -37,7 +37,7 @@ func report_error(error_message :String) -> GdUnitAssert:
 	return self
 
 
-func _failure_message() -> String:
+func failure_message() -> String:
 	return _current_error_message
 
 
@@ -68,13 +68,13 @@ func is_signal_exists(signal_name :String) -> GdUnitSignalAssert:
 
 # Verifies that given signal is emitted until waiting time
 func is_emitted(name :String, args := []) -> GdUnitSignalAssert:
-	_line_number = GdUnitAssert._get_line_number()
+	_line_number = GdUnitAssertions.get_line_number()
 	return await _wail_until_signal(name, args, false)
 
 
 # Verifies that given signal is NOT emitted until waiting time
 func is_not_emitted(name :String, args := []) -> GdUnitSignalAssert:
-	_line_number = GdUnitAssert._get_line_number()
+	_line_number = GdUnitAssertions.get_line_number()
 	return await _wail_until_signal(name, args, true)
 
 
@@ -87,24 +87,24 @@ func _wail_until_signal(signal_name :String, expected_args :Array, expect_not_em
 		report_error("Can't wait for non-existion signal '%s' checked object '%s'." % [signal_name,_emitter.get_class()])
 		return self
 	_signal_collector.register_emitter(_emitter)
-	var time_scale = Engine.get_time_scale()
+	var time_scale := Engine.get_time_scale()
 	var timer := Timer.new()
 	Engine.get_main_loop().root.add_child(timer)
 	timer.add_to_group("GdUnitTimers")
 	timer.set_one_shot(true)
-	timer.timeout.connect(func on_timeout(): _interrupted = true)
+	timer.timeout.connect(func on_timeout() -> void: _interrupted = true)
 	timer.start((_timeout/1000.0)*time_scale)
-	var is_signal_emitted = false
+	var is_signal_emitted := false
 	while not _interrupted and not is_signal_emitted:
 		await Engine.get_main_loop().process_frame
 		if is_instance_valid(_emitter):
 			is_signal_emitted = _signal_collector.match(_emitter, signal_name, expected_args)
 			if is_signal_emitted and expect_not_emitted:
 				report_error(GdAssertMessages.error_signal_emitted(signal_name, expected_args, LocalTime.elapsed(int(_timeout-timer.time_left*1000))))
-		
+
 	if _interrupted and not expect_not_emitted:
 		report_error(GdAssertMessages.error_wait_signal(signal_name, expected_args, LocalTime.elapsed(_timeout)))
 	timer.free()
 	if is_instance_valid(_emitter):
-		_signal_collector.reset_received_signals(_emitter)
+		_signal_collector.reset_received_signals(_emitter, signal_name, expected_args)
 	return self

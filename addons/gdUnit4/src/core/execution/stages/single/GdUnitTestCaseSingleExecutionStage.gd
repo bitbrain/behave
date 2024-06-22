@@ -15,7 +15,7 @@ func _execute(context :GdUnitExecutionContext) -> void:
 	await _stage_after.execute(context)
 
 
-func set_debug_mode(debug_mode :bool = false):
+func set_debug_mode(debug_mode :bool = false) -> void:
 	super.set_debug_mode(debug_mode)
 	_stage_before.set_debug_mode(debug_mode)
 	_stage_after.set_debug_mode(debug_mode)

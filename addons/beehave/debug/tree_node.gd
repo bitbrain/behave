@@ -100,7 +100,11 @@ func _calculate_initial_x(node: TreeNode) -> void:
 		_calculate_initial_x(child)
 	if node.is_leaf():
 		if not node.is_most_left():
-			node.x = node.get_previous_sibling().x + node.get_previous_sibling().item.layout_size + SIBLING_DISTANCE
+			node.x = (
+				node.get_previous_sibling().x
+				+ node.get_previous_sibling().item.layout_size
+				+ SIBLING_DISTANCE
+			)
 		else:
 			node.x = 0
 	else:
@@ -111,12 +115,24 @@ func _calculate_initial_x(node: TreeNode) -> void:
 		else:
 			var left_child := node.get_most_left_child()
 			var right_child := node.get_most_right_child()
-			mid = (left_child.x + right_child.x + right_child.item.layout_size - node.item.layout_size) / 2
+			mid = (
+				(
+					left_child.x
+					+ right_child.x
+					+ right_child.item.layout_size
+					- node.item.layout_size
+				)
+				/ 2
+			)
 
 		if node.is_most_left():
 			node.x = mid
 		else:
-			node.x = node.get_previous_sibling().x + node.get_previous_sibling().item.layout_size + SIBLING_DISTANCE
+			node.x = (
+				node.get_previous_sibling().x
+				+ node.get_previous_sibling().item.layout_size
+				+ SIBLING_DISTANCE
+			)
 			node.mod = node.x - mid
 
 	if not node.is_leaf() and not node.is_most_left():
@@ -150,7 +166,7 @@ func _check_for_conflicts(node: TreeNode) -> void:
 	var shift_value: float = 0
 	var shift_sibling: TreeNode = null
 
-	var node_contour: Dictionary = {}# { int, float }
+	var node_contour: Dictionary = {}  # { int, float }
 	_get_left_contour(node, 0, node_contour)
 
 	var sibling := node.get_most_left_sibling()
@@ -158,7 +174,9 @@ func _check_for_conflicts(node: TreeNode) -> void:
 		var sibling_contour: Dictionary = {}
 		_get_right_contour(sibling, 0, sibling_contour)
 
-		for level in range(node.y + 1, min(sibling_contour.keys().max(), node_contour.keys().max()) + 1):
+		for level in range(
+			node.y + 1, min(sibling_contour.keys().max(), node_contour.keys().max()) + 1
+		):
 			var distance: float = node_contour[level] - sibling_contour[level]
 			if distance + shift_value < min_distance:
 				shift_value = min_distance - distance

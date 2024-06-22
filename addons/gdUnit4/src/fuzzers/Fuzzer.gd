@@ -23,7 +23,7 @@ var _iteration_limit :int = ITERATION_DEFAULT_COUNT
 
 
 # generates the next fuzz value
-# needs to be implement 
+# needs to be implement
 func next_value() -> Variant:
 	push_error("Invalid vall. Fuzzer not implemented 'next_value()'")
 	return null

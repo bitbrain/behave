@@ -14,7 +14,6 @@ grow_horizontal = 2
 grow_vertical = 2
 size_flags_vertical = 9
 theme_override_styles/fill = SubResource("StyleBoxFlat_ayfir")
-max_value = 0.0
 rounded = true
 allow_greater = true
 show_percentage = false

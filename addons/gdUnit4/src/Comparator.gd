@@ -1,7 +1,7 @@
 class_name Comparator
 extends Resource
 
-enum { 
+enum {
 	EQUAL,
 	LESS_THAN,
 	LESS_EQUAL,

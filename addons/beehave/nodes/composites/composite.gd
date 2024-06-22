@@ -11,7 +11,9 @@ func _get_configuration_warnings() -> PackedStringArray:
 	var warnings: PackedStringArray = super._get_configuration_warnings()
 
 	if get_children().filter(func(x): return x is BeehaveNode).size() < 2:
-		warnings.append("Any composite node should have at least two children. Otherwise it is not useful.")
+		warnings.append(
+			"Any composite node should have at least two children. Otherwise it is not useful."
+		)
 
 	return warnings
 

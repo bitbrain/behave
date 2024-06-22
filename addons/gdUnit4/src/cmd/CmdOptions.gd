@@ -2,25 +2,25 @@ class_name CmdOptions
 extends RefCounted
 
 
-var _default_options :Array
-var _advanced_options :Array
+var _default_options :Array[CmdOption]
+var _advanced_options :Array[CmdOption]
 
 
-func _init(p_options :Array = Array(), p_advanced_options :Array = Array()):
+func _init(p_options :Array[CmdOption] = [], p_advanced_options :Array[CmdOption] = []) -> void:
 	# default help options
-	_default_options = p_options 
+	_default_options = p_options
 	_advanced_options = p_advanced_options
 
 
-func default_options() -> Array:
+func default_options() -> Array[CmdOption]:
 	return _default_options
 
 
-func advanced_options() -> Array:
+func advanced_options() -> Array[CmdOption]:
 	return _advanced_options
 
 
-func options() -> Array:
+func options() -> Array[CmdOption]:
 	return default_options() + advanced_options()
 
 

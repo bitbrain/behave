@@ -2,13 +2,14 @@
 class_name GdDefaultValueDecoder
 extends GdUnitSingleton
 
+
 @warning_ignore("unused_parameter")
-var _decoders = {
-	TYPE_NIL: func(value): return "null",
-	TYPE_STRING: func(value): return '"%s"' % value,
+var _decoders := {
+	TYPE_NIL: func(value :Variant) -> String: return "null",
+	TYPE_STRING: func(value :Variant) -> String: return '"%s"' % value,
 	TYPE_STRING_NAME: _on_type_StringName,
-	TYPE_BOOL: func(value): return str(value).to_lower(),
-	TYPE_FLOAT: func(value): return '%f' % value,
+	TYPE_BOOL: func(value :Variant) -> String: return str(value).to_lower(),
+	TYPE_FLOAT: func(value :Variant) -> String: return '%f' % value,
 	TYPE_COLOR: _on_type_Color,
 	TYPE_ARRAY: _on_type_Array.bind(TYPE_ARRAY),
 	TYPE_PACKED_BYTE_ARRAY: _on_type_Array.bind(TYPE_PACKED_BYTE_ARRAY),
@@ -20,6 +21,7 @@ var _decoders = {
 	TYPE_PACKED_COLOR_ARRAY: _on_type_Array.bind(TYPE_PACKED_COLOR_ARRAY),
 	TYPE_PACKED_VECTOR2_ARRAY: _on_type_Array.bind(TYPE_PACKED_VECTOR2_ARRAY),
 	TYPE_PACKED_VECTOR3_ARRAY: _on_type_Array.bind(TYPE_PACKED_VECTOR3_ARRAY),
+	GdObjects.TYPE_PACKED_VECTOR4_ARRAY: _on_type_Array.bind(GdObjects.TYPE_PACKED_VECTOR4_ARRAY),
 	TYPE_DICTIONARY: _on_type_Dictionary,
 	TYPE_RID: _on_type_RID,
 	TYPE_NODE_PATH: _on_type_NodePath,
@@ -45,7 +47,7 @@ var _decoders = {
 
 static func _regex(pattern :String) -> RegEx:
 	var regex := RegEx.new()
-	var err = regex.compile(pattern)
+	var err := regex.compile(pattern)
 	if err != OK:
 		push_error("error '%s' checked pattern '%s'" % [err, pattern])
 		return null
@@ -53,7 +55,7 @@ static func _regex(pattern :String) -> RegEx:
 
 
 func get_decoder(type :int) -> Callable:
-	return _decoders.get(type, func(value): return '%s' % value)
+	return _decoders.get(type, func(value :Variant) -> String: return '%s' % value)
 
 
 func _on_type_StringName(value :StringName) -> String:
@@ -62,7 +64,7 @@ func _on_type_StringName(value :StringName) -> String:
 	return 'StringName("%s")' % value
 
 
-func _on_type_Object(value :Object, type :int) -> String:
+func _on_type_Object(value :Object, _type :int) -> String:
 	return str(value)
 
 
@@ -78,11 +80,11 @@ func _on_type_NodePath(path :NodePath) -> String:
 	return 'NodePath("%s")' % path
 
 
-func _on_type_Callable(cb :Callable) -> String:
+func _on_type_Callable(_cb :Callable) -> String:
 	return 'Callable()'
 
 
-func _on_type_Signal(s :Signal) -> String:
+func _on_type_Signal(_s :Signal) -> String:
 	return 'Signal()'
 
 
@@ -92,7 +94,7 @@ func _on_type_Dictionary(dict :Dictionary) -> String:
 	return str(dict)
 
 
-func _on_type_Array(value, type :int) -> String:
+func _on_type_Array(value :Variant, type :int) -> String:
 	match type:
 		TYPE_ARRAY:
 			return str(value)
@@ -121,6 +123,14 @@ func _on_type_Array(value, type :int) -> String:
 				return "PackedVector3Array()"
 			return "PackedVector3Array([%s])" % ", ".join(vectors)
 
+		GdObjects.TYPE_PACKED_VECTOR4_ARRAY:
+			var vectors := PackedStringArray()
+			for vector:Variant in value as Array:
+				vectors.append(_on_type_Vector(vector, TYPE_VECTOR4))
+			if vectors.is_empty():
+				return "PackedVector4Array()"
+			return "PackedVector4Array([%s])" % ", ".join(vectors)
+
 		TYPE_PACKED_STRING_ARRAY:
 			var values := PackedStringArray()
 			for v in value as PackedStringArray:
@@ -135,7 +145,7 @@ func _on_type_Array(value, type :int) -> String:
 		TYPE_PACKED_INT32_ARRAY,\
 		TYPE_PACKED_INT64_ARRAY:
 			var vectors := PackedStringArray()
-			for vector in value as Array:
+			for vector :Variant in value as Array:
 				vectors.append(str(vector))
 			if vectors.is_empty():
 				return GdObjects.type_as_string(type) + "()"
@@ -233,7 +243,7 @@ static func decode(value :Variant) -> String:
 	var type := typeof(value)
 	if GdArrayTools.is_type_array(type) and value.is_empty():
 		return "<empty>"
-	var decoder :Callable = instance("GdUnitDefaultValueDecoders", func(): return GdDefaultValueDecoder.new()).get_decoder(type)
+	var decoder :Callable = instance("GdUnitDefaultValueDecoders", func() -> GdDefaultValueDecoder: return GdDefaultValueDecoder.new()).get_decoder(type)
 	if decoder == null:
 		push_error("No value decoder registered for type '%d'! Please open a Bug issue at 'https://github.com/MikeSchulze/gdUnit4/issues/new/choose'." % type)
 		return "null"
@@ -245,7 +255,7 @@ static func decode(value :Variant) -> String:
 static func decode_typed(type :int, value :Variant) -> String:
 	if value == null:
 		return "null"
-	var decoder :Callable = instance("GdUnitDefaultValueDecoders", func(): return GdDefaultValueDecoder.new()).get_decoder(type)
+	var decoder :Callable = instance("GdUnitDefaultValueDecoders", func() -> GdDefaultValueDecoder: return GdDefaultValueDecoder.new()).get_decoder(type)
 	if decoder == null:
 		push_error("No value decoder registered for type '%d'! Please open a Bug issue at 'https://github.com/MikeSchulze/gdUnit4/issues/new/choose'." % type)
 		return "null"

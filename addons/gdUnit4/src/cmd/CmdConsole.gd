@@ -3,35 +3,44 @@
 class_name CmdConsole
 extends RefCounted
 
-const BOLD = 0x1
-const ITALIC = 0x2
-const UNDERLINE = 0x4
-
-const __CSI_BOLD = "[1m"
-const __CSI_ITALIC = "[3m"
-const __CSI_UNDERLINE = "[4m"
-
 enum {
 	COLOR_TABLE,
 	COLOR_RGB
 }
 
+const BOLD = 0x1
+const ITALIC = 0x2
+const UNDERLINE = 0x4
+
+const CSI_BOLD = "[1m"
+const CSI_ITALIC = "[3m"
+const CSI_UNDERLINE = "[4m"
+
 # Control Sequence Introducer
-#var csi := PackedByteArray([0x1b]).get_string_from_ascii()
 var _debug_show_color_codes := false
-var _color_mode = COLOR_TABLE
+var _color_mode := COLOR_TABLE
 
 
 func color(p_color :Color) -> CmdConsole:
 	# using color table 16 - 231 a  6 x 6 x 6 RGB color cube  (16 + R * 36 + G * 6 + B)
 	if _color_mode == COLOR_TABLE:
 		@warning_ignore("integer_division")
-		var c2 = 16 + (int(p_color.r8/42) * 36) + (int(p_color.g8/42) * 6) + int(p_color.b8/42)
+		var c2 := 16 + (int(p_color.r8/42) * 36) + (int(p_color.g8/42) * 6) + int(p_color.b8/42)
 		if _debug_show_color_codes:
 			printraw("%6d" % [c2])
 		printraw("[38;5;%dm" % c2 )
 	else:
 		printraw("[38;2;%d;%d;%dm" % [p_color.r8, p_color.g8, p_color.b8] )
+	return self
+
+
+func save_cursor() -> CmdConsole:
+	printraw("[s")
+	return self
+
+
+func restore_cursor() -> CmdConsole:
+	printraw("[u")
 	return self
 
 
@@ -45,12 +54,12 @@ func row_pos(row :int) -> CmdConsole:
 	return self
 
 
-func scrollArea(from :int, to :int ) -> CmdConsole:
+func scroll_area(from :int, to :int) -> CmdConsole:
 	printraw("[%d;%dr" % [from ,to])
 	return self
 
 
-func progressBar(p_progress :int, p_color :Color = Color.POWDER_BLUE) -> CmdConsole:
+func progress_bar(p_progress :int, p_color :Color = Color.POWDER_BLUE) -> CmdConsole:
 	if p_progress < 0:
 		p_progress = 0
 	if p_progress > 100:
@@ -77,19 +86,19 @@ func reset() -> CmdConsole:
 
 func bold(enable :bool) -> CmdConsole:
 	if enable:
-		printraw(__CSI_BOLD)
+		printraw(CSI_BOLD)
 	return self
 
 
 func italic(enable :bool) -> CmdConsole:
 	if enable:
-		printraw(__CSI_ITALIC)
+		printraw(CSI_ITALIC)
 	return self
 
 
 func underline(enable :bool) -> CmdConsole:
 	if enable:
-		printraw(__CSI_UNDERLINE)
+		printraw(CSI_UNDERLINE)
 	return self
 
 
@@ -114,7 +123,7 @@ func print_color(p_message :String, p_color :Color, p_flags := 0) -> CmdConsole:
 		.end_color()
 
 
-func print_color_table():
+func print_color_table() -> void:
 	prints_color("Color Table 6x6x6", Color.ANTIQUE_WHITE)
 	_debug_show_color_codes = true
 	for green in range(0, 6):
@@ -123,7 +132,7 @@ func print_color_table():
 				print_color("████████ ", Color8(red*42, green*42, blue*42))
 			new_line()
 		new_line()
-		
+
 	prints_color("Color Table RGB", Color.ANTIQUE_WHITE)
 	_color_mode = COLOR_RGB
 	for green in range(0, 6):

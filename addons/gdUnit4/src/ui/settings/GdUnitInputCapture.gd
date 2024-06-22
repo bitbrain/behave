@@ -2,17 +2,14 @@
 class_name GdUnitInputCapture
 extends Control
 
-
-signal input_completed(input_event :InputEventKey)
-
-@onready var _label = %Label
+signal input_completed(input_event: InputEventKey)
 
 
-var _tween :Tween
-var _input_event :InputEventKey
+var _tween: Tween
+var _input_event: InputEventKey
 
 
-func _ready():
+func _ready() -> void:
 	reset()
 	_tween = create_tween()
 	_tween.set_loops(-1)
@@ -23,30 +20,30 @@ func reset() -> void:
 	_input_event = InputEventKey.new()
 
 
-func _input(event :InputEvent):
+func _input(event: InputEvent) -> void:
 	if not is_visible_in_tree():
 		return
 	if event is InputEventKey and event.is_pressed() and not event.is_echo():
 		match event.keycode:
-			KEY_CTRL: 
+			KEY_CTRL:
 				_input_event.ctrl_pressed = true
-			KEY_SHIFT: 
+			KEY_SHIFT:
 				_input_event.shift_pressed = true
-			KEY_ALT: 
+			KEY_ALT:
 				_input_event.alt_pressed = true
-			KEY_META: 
+			KEY_META:
 				_input_event.meta_pressed = true
-			_: 
+			_:
 				_input_event.keycode = event.keycode
 		_apply_input_modifiers(event)
 		accept_event()
-	
+
 	if event is InputEventKey and not event.is_pressed():
 		input_completed.emit(_input_event)
 		hide()
 
 
-func _apply_input_modifiers(event :InputEvent) -> void:
+func _apply_input_modifiers(event: InputEvent) -> void:
 	if event is InputEventWithModifiers:
 		_input_event.meta_pressed = event.meta_pressed or _input_event.meta_pressed
 		_input_event.alt_pressed = event.alt_pressed or _input_event.alt_pressed

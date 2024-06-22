@@ -6,7 +6,10 @@ if [ -z "$GODOT_BIN" ]; then
     exit 1
 fi
 
-$GODOT_BIN --path . -s -d ./addons/gdUnit4/bin/GdUnitCmdTool.gd $*
+"$GODOT_BIN" --path . -s -d res://addons/gdUnit4/bin/GdUnitCmdTool.gd $*
 exit_code=$?
-$GODOT_BIN --headless --path . --quiet -s -d ./addons/gdUnit4/bin/GdUnitCopyLog.gd $* > /dev/null
+echo "Run tests ends with $exit_code"
+
+"$GODOT_BIN" --headless --path . --quiet -s -d res://addons/gdUnit4/bin/GdUnitCopyLog.gd $* > /dev/null
+exit_code2=$?
 exit $exit_code

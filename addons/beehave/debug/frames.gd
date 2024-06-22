@@ -1,9 +1,7 @@
 @tool
 extends RefCounted
 
-
 const BeehaveUtils := preload("res://addons/beehave/utils/utils.gd")
-
 
 const SUCCESS_COLOR := Color("#009944c8")
 const NORMAL_COLOR := Color("#15181e")
@@ -26,9 +24,21 @@ func _init() -> void:
 
 	empty = StyleBoxEmpty.new()
 
-	normal = plugin.get_editor_interface().get_base_control().get_theme_stylebox(&"frame", &"GraphNode").duplicate()
+	normal = (
+		plugin
+		. get_editor_interface()
+		. get_base_control()
+		. get_theme_stylebox(&"frame", &"GraphNode")
+		. duplicate()
+	)
 
-	success = plugin.get_editor_interface().get_base_control().get_theme_stylebox(&"selected_frame", &"GraphNode").duplicate()
+	success = (
+		plugin
+		. get_editor_interface()
+		. get_base_control()
+		. get_theme_stylebox(&"selected_frame", &"GraphNode")
+		. duplicate()
+	)
 	failure = success.duplicate()
 	running = success.duplicate()
 

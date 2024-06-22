@@ -12,11 +12,11 @@ func _execute(context :GdUnitExecutionContext) -> void:
 	var test_suite := context.test_suite
 	var test_case := context.test_case
 	var fuzzers := create_fuzzers(test_suite, test_case)
-	
+
 	# guard on fuzzers
 	for fuzzer in fuzzers:
 		GdUnitMemoryObserver.guard_instance(fuzzer)
-	
+
 	for iteration in test_case.iterations():
 		@warning_ignore("redundant_await")
 		await test_suite.before_test()
@@ -33,7 +33,7 @@ func _execute(context :GdUnitExecutionContext) -> void:
 				.create(GdUnitReport.FAILURE, report.line_number(), GdAssertMessages.fuzzer_interuped(iteration, report.message())))
 			break
 	await context.gc()
-	
+
 	# unguard on fuzzers
 	if not test_case.is_interupted():
 		for fuzzer in fuzzers:

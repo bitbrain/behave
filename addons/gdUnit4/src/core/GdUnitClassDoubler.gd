@@ -29,7 +29,7 @@ static func check_leaked_instances() -> void:
 	## we check that all registered spy/mock instances are removed from the engine meta data
 	for key in Engine.get_meta_list():
 		if key.begins_with(DOUBLER_INSTANCE_ID_PREFIX):
-			var instance =  Engine.get_meta(key)
+			var instance :Variant = Engine.get_meta(key)
 			push_error("GdUnit internal error: an spy/mock instance '%s', class:'%s' is not removed from the engine and will lead in a leaked instance!" % [instance, instance.__SOURCE_CLASS])
 
 
@@ -37,7 +37,7 @@ static func check_leaked_instances() -> void:
 # class_info = { "class_name": <>, "class_path" : <>}
 static func load_template(template :String, class_info :Dictionary, instance :Object) -> PackedStringArray:
 	# store instance id
-	var source_code = template\
+	var source_code := template\
 		.replace("${instance_id}", "%s%d" % [DOUBLER_INSTANCE_ID_PREFIX, abs(instance.get_instance_id())])\
 		.replace("${source_class}", class_info.get("class_name"))
 	var lines := GdScriptParser.to_unix_format(source_code).split("\n")
@@ -66,7 +66,7 @@ static func double_functions(instance :Object, clazz_name :String, clazz_path :P
 	var parser := GdScriptParser.new()
 	var exclude_override_functions := EXCLUDE_VIRTUAL_FUNCTIONS + EXCLUDE_FUNCTIONS + exclude_functions
 	var functions := Array()
-	
+
 	# double script functions
 	if not ClassDB.class_exists(clazz_name):
 		var result := parser.parse(clazz_name, clazz_path)
@@ -84,10 +84,10 @@ static func double_functions(instance :Object, clazz_name :String, clazz_path :P
 				doubled_source += func_doubler.double(func_descriptor)
 				functions.append(func_descriptor.name())
 			class_descriptor = class_descriptor.parent()
-	
+
 	# double regular class functions
 	var clazz_functions := GdObjects.extract_class_functions(clazz_name, clazz_path)
-	for method in clazz_functions:
+	for method : Dictionary in clazz_functions:
 		var func_descriptor := GdFunctionDescriptor.extract_from(method)
 		# exclude private core functions
 		if func_descriptor.is_private():
@@ -109,7 +109,7 @@ static func double_functions(instance :Object, clazz_name :String, clazz_path :P
 
 # GD-110
 static func is_invalid_method_descriptior(method :Dictionary) -> bool:
-	var return_info = method["return"]
+	var return_info :Dictionary = method["return"]
 	var type :int = return_info["type"]
 	var usage :int = return_info["usage"]
 	var clazz_name :String = return_info["class_name"]

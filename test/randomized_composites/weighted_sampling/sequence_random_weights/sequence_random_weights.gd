@@ -24,7 +24,7 @@ func _on_sequence_reset(new_order: Array[Node]):
 	if not sample_count.has(first.name):
 		sample_count[first.name] = 0
 	sample_count[first.name] += 1
-	
+
 	if reset_count >= test_sample_count:
 		done.emit()
 

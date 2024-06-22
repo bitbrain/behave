@@ -3,16 +3,16 @@ extends RefCounted
 
 ## do call the real implementation
 const CALL_REAL_FUNC = "CALL_REAL_FUNC"
-## do return a default value for primitive types or null 
+## do return a default value for primitive types or null
 const RETURN_DEFAULTS = "RETURN_DEFAULTS"
 ## do return a default value for primitive types and a fully mocked value for Object types
 ## builds full deep mocked object
 const RETURN_DEEP_STUB = "RETURN_DEEP_STUB"
 
-var _value
+var _value :Variant
 
 
-func _init(value):
+func _init(value :Variant) -> void:
 	_value = value
 
 
@@ -28,7 +28,7 @@ func on(obj :Object) -> Object:
 
 
 ## [color=yellow]`checked` is obsolete, use `on` instead [/color]
-func  checked(obj :Object) -> Object:
+func checked(obj :Object) -> Object:
 	push_warning("Using a deprecated function 'checked' use `on` instead")
 	return on(obj)
 

@@ -2,8 +2,10 @@ class_name GdUnitTestCaseReport
 extends GdUnitReportSummary
 
 var _suite_name :String
-var _failure_reports :Array
+var _failure_reports :Array[GdUnitReport]
 
+
+@warning_ignore("shadowed_variable")
 func _init(
 		p_resource_path :String,
 		p_suite_name :String,
@@ -11,17 +13,16 @@ func _init(
 		is_error := false,
 		_is_failed := false,
 		failed_count :int = 0,
-		orphan_count_ :int = 0,
+		orphan_count :int = 0,
 		is_skipped := false,
-		failure_reports :Array = [],
-		p_duration :int = 0):
+		failure_reports :Array[GdUnitReport] = [],
+		p_duration :int = 0) -> void:
 	_resource_path = p_resource_path
 	_suite_name = p_suite_name
 	_name = test_name
-	_test_count = 1
 	_error_count = is_error
 	_failure_count = failed_count
-	_orphan_count = orphan_count_
+	_orphan_count = orphan_count
 	_skipped_count = is_skipped
 	_failure_reports = failure_reports
 	_duration = p_duration
@@ -33,9 +34,8 @@ func suite_name() -> String:
 
 func failure_report() -> String:
 	var html_report := ""
-	for r in _failure_reports:
-		var report: GdUnitReport = r
-		html_report += convert_rtf_to_html(report._to_string())
+	for report in _failure_reports:
+		html_report += convert_rtf_to_html(str(report))
 	return html_report
 
 

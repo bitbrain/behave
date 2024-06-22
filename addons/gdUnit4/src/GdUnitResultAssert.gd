@@ -13,7 +13,7 @@ func is_not_null() -> GdUnitResultAssert:
 	return self
 
 
-## Verifies that the result is ends up with empty 
+## Verifies that the result is ends up with empty
 func is_empty() -> GdUnitResultAssert:
 	return self
 
@@ -41,5 +41,5 @@ func contains_message(expected :String) -> GdUnitResultAssert:
 
 ## Verifies that the result contains the given value
 @warning_ignore("unused_parameter")
-func is_value(expected) -> GdUnitResultAssert:
+func is_value(expected :Variant) -> GdUnitResultAssert:
 	return self

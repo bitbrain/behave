@@ -4,7 +4,7 @@ extends GdFunctionDoubler
 
 const TEMPLATE_FUNC_WITH_RETURN_VALUE = """
 	var args :Array = ["$(func_name)", $(arguments)]
-	
+
 	if $(instance)__is_prepare_return_value():
 		$(instance)__save_function_return_value(args)
 		return ${default_return_value}
@@ -13,7 +13,7 @@ const TEMPLATE_FUNC_WITH_RETURN_VALUE = """
 		return ${default_return_value}
 	else:
 		$(instance)__save_function_interaction(args)
-	
+
 	if $(instance)__do_call_real_func("$(func_name)", args):
 		return $(await)super($(arguments))
 	return $(instance)__get_mocked_return_value_or_default(args, ${default_return_value})
@@ -23,7 +23,7 @@ const TEMPLATE_FUNC_WITH_RETURN_VALUE = """
 
 const TEMPLATE_FUNC_WITH_RETURN_VOID = """
 	var args :Array = ["$(func_name)", $(arguments)]
-	
+
 	if $(instance)__is_prepare_return_value():
 		if $(push_errors):
 			push_error(\"Mocking a void function '$(func_name)(<args>) -> void:' is not allowed.\")
@@ -33,7 +33,7 @@ const TEMPLATE_FUNC_WITH_RETURN_VOID = """
 		return
 	else:
 		$(instance)__save_function_interaction(args)
-	
+
 	if $(instance)__do_call_real_func("$(func_name)"):
 		$(await)super($(arguments))
 
@@ -43,7 +43,7 @@ const TEMPLATE_FUNC_WITH_RETURN_VOID = """
 const TEMPLATE_FUNC_VARARG_RETURN_VALUE = """
 	var varargs :Array = __filter_vargs([$(varargs)])
 	var args :Array = ["$(func_name)", $(arguments)] + varargs
-	
+
 	if $(instance)__is_prepare_return_value():
 		if $(push_errors):
 			push_error(\"Mocking a void function '$(func_name)(<args>) -> void:' is not allowed.\")
@@ -54,7 +54,7 @@ const TEMPLATE_FUNC_VARARG_RETURN_VALUE = """
 		return ${default_return_value}
 	else:
 		$(instance)__save_function_interaction(args)
-	
+
 	if $(instance)__do_call_real_func("$(func_name)", args):
 		match varargs.size():
 			0: return $(await)super($(arguments))
@@ -73,7 +73,7 @@ const TEMPLATE_FUNC_VARARG_RETURN_VALUE = """
 """
 
 
-func _init(push_errors :bool = false):
+func _init(push_errors :bool = false) -> void:
 	super._init(push_errors)
 
 

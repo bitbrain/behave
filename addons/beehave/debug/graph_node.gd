@@ -1,9 +1,7 @@
 @tool
 extends GraphNode
 
-
 const BeehaveUtils := preload("res://addons/beehave/utils/utils.gd")
-
 
 const DEFAULT_COLOR := Color("#dad4cb")
 
@@ -11,7 +9,6 @@ const PORT_TOP_ICON := preload("icons/port_top.svg")
 const PORT_BOTTOM_ICON := preload("icons/port_bottom.svg")
 const PORT_LEFT_ICON := preload("icons/port_left.svg")
 const PORT_RIGHT_ICON := preload("icons/port_right.svg")
-
 
 @export var title_text: String:
 	set(value):
@@ -35,7 +32,6 @@ var layout_size: float:
 	get:
 		return size.y if horizontal else size.x
 
-
 var panel: PanelContainer
 var icon_rect: TextureRect
 var title_label: Label
@@ -46,7 +42,7 @@ var frames: RefCounted
 var horizontal: bool = false
 
 
-func _init(frames:RefCounted, horizontal: bool = false) -> void:
+func _init(frames: RefCounted, horizontal: bool = false) -> void:
 	self.frames = frames
 	self.horizontal = horizontal
 
@@ -73,7 +69,9 @@ func _ready() -> void:
 
 	var title_size := 24 * BeehaveUtils.get_editor_scale()
 	var margin_container := MarginContainer.new()
-	margin_container.add_theme_constant_override("margin_top", -title_size - 2 * BeehaveUtils.get_editor_scale())
+	margin_container.add_theme_constant_override(
+		"margin_top", -title_size - 2 * BeehaveUtils.get_editor_scale()
+	)
 	margin_container.mouse_filter = Control.MOUSE_FILTER_PASS
 	vbox_container.add_child(margin_container)
 
@@ -119,18 +117,34 @@ func set_status(status: int) -> void:
 
 func _get_stylebox(status: int) -> StyleBox:
 	match status:
-		0: return frames.success
-		1: return frames.failure
-		2: return frames.running
-		_: return frames.normal
+		0:
+			return frames.success
+		1:
+			return frames.failure
+		2:
+			return frames.running
+		_:
+			return frames.normal
 
 
 func set_slots(left_enabled: bool, right_enabled: bool) -> void:
 	if horizontal:
-		set_slot(1, left_enabled, 0, Color.WHITE, right_enabled, 0, Color.WHITE, PORT_LEFT_ICON, PORT_RIGHT_ICON)
+		set_slot(
+			1,
+			left_enabled,
+			0,
+			Color.WHITE,
+			right_enabled,
+			0,
+			Color.WHITE,
+			PORT_LEFT_ICON,
+			PORT_RIGHT_ICON
+		)
 	else:
 		set_slot(0, left_enabled, 0, Color.WHITE, false, -2, Color.TRANSPARENT, PORT_TOP_ICON, null)
-		set_slot(2, false, -1, Color.TRANSPARENT, right_enabled, 0, Color.WHITE, null, PORT_BOTTOM_ICON)
+		set_slot(
+			2, false, -1, Color.TRANSPARENT, right_enabled, 0, Color.WHITE, null, PORT_BOTTOM_ICON
+		)
 
 
 func set_color(color: Color) -> void:
@@ -147,4 +161,6 @@ func set_output_color(color: Color) -> void:
 
 
 func _on_size_changed():
-	add_theme_constant_override("port_offset", 12 * BeehaveUtils.get_editor_scale() if horizontal else round(size.x / 2.0))
+	add_theme_constant_override(
+		"port_offset", 12 * BeehaveUtils.get_editor_scale() if horizontal else round(size.x / 2.0)
+	)
