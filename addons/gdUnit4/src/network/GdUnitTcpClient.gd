@@ -1,10 +1,9 @@
 class_name GdUnitTcpClient
 extends Node
 
-signal connection_succeeded(message)
-signal connection_failed(message)
+signal connection_succeeded(message :String)
+signal connection_failed(message :String)
 
-var _timer :Timer
 
 var _host :String
 var _port :int
@@ -13,14 +12,10 @@ var _connected :bool
 var _stream :StreamPeerTCP
 
 
-func _ready():
+func _ready() -> void:
 	_connected = false
 	_stream = StreamPeerTCP.new()
 	_stream.set_big_endian(true)
-	_timer = Timer.new()
-	add_child(_timer)
-	_timer.set_one_shot(true)
-	_timer.connect('timeout', Callable(self, '_connecting_timeout'))
 
 
 func stop() -> void:
@@ -37,7 +32,7 @@ func start(host :String, port :int) -> GdUnitResult:
 	_port = port
 	if _connected:
 		return GdUnitResult.warn("Client already connected ... %s:%d" % [_host, _port])
-	
+
 	# Connect client to server
 	if _stream.get_status() != StreamPeerTCP.STATUS_CONNECTED:
 		var err := _stream.connect_to_host(host, port)
@@ -47,11 +42,11 @@ func start(host :String, port :int) -> GdUnitResult:
 	return GdUnitResult.success("GdUnit3: Client connected checked port %d" % port)
 
 
-func _process(_delta):
+func _process(_delta :float) -> void:
 	match _stream.get_status():
 		StreamPeerTCP.STATUS_NONE:
 			return
-		
+
 		StreamPeerTCP.STATUS_CONNECTING:
 			set_process(false)
 			# wait until client is connected to server
@@ -66,11 +61,11 @@ func _process(_delta):
 			set_process(true)
 			_stream.disconnect_from_host()
 			console("connection failed")
-			emit_signal("connection_failed", "Connect to TCP Server %s:%d faild!" % [_host, _port])
-		
+			connection_failed.emit("Connect to TCP Server %s:%d faild!" % [_host, _port])
+
 		StreamPeerTCP.STATUS_CONNECTED:
 			if not _connected:
-				var rpc_ = null
+				var rpc_ :RPC = null
 				set_process(false)
 				while rpc_ == null:
 					await get_tree().create_timer(0.500).timeout
@@ -78,14 +73,14 @@ func _process(_delta):
 				set_process(true)
 				_client_id = rpc_.client_id()
 				console("Connected to Server: %d" % _client_id)
-				emit_signal("connection_succeeded", "Connect to TCP Server %s:%d success." % [_host, _port])
+				connection_succeeded.emit("Connect to TCP Server %s:%d success." % [_host, _port])
 				_connected = true
 			process_rpc()
-		
+
 		StreamPeerTCP.STATUS_ERROR:
 			console("connection failed")
 			_stream.disconnect_from_host()
-			emit_signal("connection_failed", "Connect to TCP Server %s:%d faild!" % [_host, _port])
+			connection_failed.emit("Connect to TCP Server %s:%d faild!" % [_host, _port])
 			return
 
 
@@ -95,7 +90,7 @@ func is_client_connected() -> bool:
 
 func process_rpc() -> void:
 	if _stream.get_available_bytes() > 0:
-		var rpc_ = rpc_receive()
+		var rpc_ := rpc_receive()
 		if rpc_ is RPCClientDisconnect:
 			stop()
 
@@ -103,7 +98,7 @@ func process_rpc() -> void:
 func rpc_send(p_rpc :RPC) -> void:
 	if _stream != null:
 		var data := GdUnitServerConstants.JSON_RESPONSE_DELIMITER + p_rpc.serialize() + GdUnitServerConstants.JSON_RESPONSE_DELIMITER
-		_stream.put_data(data.to_ascii_buffer())
+		_stream.put_data(data.to_utf8_buffer())
 
 
 func rpc_receive() -> RPC:
@@ -116,22 +111,22 @@ func rpc_receive() -> RPC:
 			var header := Array(received_data.slice(0, 4))
 			if header == [0, 0, 0, 124]:
 				received_data = received_data.slice(12, available_bytes)
-			var decoded := received_data.get_string_from_ascii()
+			var decoded := received_data.get_string_from_utf8()
 			if decoded == "":
-				#prints("decoded is empty", available_bytes, received_data.get_string_from_ascii())
+				#prints("decoded is empty", available_bytes, received_data.get_string_from_utf8())
 				return null
 			return RPC.deserialize(decoded)
 	return null
 
 
-func console(message :String) -> void:
-	prints("TCP Client:", message)
+func console(_message :String) -> void:
+	#prints("TCP Client:", _message)
 	pass
 
 
-func _on_connection_failed(message :String):
+func _on_connection_failed(message :String) -> void:
 	console("connection faild: " + message)
 
 
-func _on_connection_succeeded(message :String):
+func _on_connection_succeeded(message :String) -> void:
 	console("connected: " + message)

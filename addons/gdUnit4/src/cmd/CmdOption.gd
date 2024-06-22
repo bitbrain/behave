@@ -15,7 +15,7 @@ var _arg_optional :bool = false
 # description: a full description of the command
 # type: the argument type
 # arg_optional: defines of the argument optional
-func _init(p_commands :String, p_help :String, p_description :String, p_type :int = TYPE_NIL, p_arg_optional :bool = false):
+func _init(p_commands :String, p_help :String, p_description :String, p_type :int = TYPE_NIL, p_arg_optional :bool = false) -> void:
 	_commands = p_commands.replace(" ", "").replace("\t", "").split(",")
 	_help = p_help
 	_description = p_description
@@ -57,5 +57,5 @@ func describe() -> String:
 	return "  %-32s %s \n  %-32s %s\n" % [commands(), description(), "", help()]
 
 
-func _to_string():
+func _to_string() -> String:
 	return describe()

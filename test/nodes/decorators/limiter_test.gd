@@ -19,13 +19,13 @@ func before_test() -> void:
 	tree = auto_free(load(__tree).new())
 	action = auto_free(load(__action).new())
 	limiter = auto_free(load(__source).new())
-	
+
 	var actor = auto_free(Node2D.new())
 	var blackboard = auto_free(load(__blackboard).new())
-	
+
 	tree.add_child(limiter)
 	limiter.add_child(action)
-	
+
 	tree.actor = actor
 	tree.blackboard = blackboard
 
@@ -40,7 +40,7 @@ func test_max_count(count: int, _test_parameters: Array = [[2], [0]]) -> void:
 	assert_that(tree.tick()).is_equal(BeehaveNode.FAILURE)
 	# ensure it resets its child after it reached max count
 	assert_that(action.count).is_equal(0)
-	
+
 
 func test_interrupt_after_run() -> void:
 	action.status = BeehaveNode.RUNNING

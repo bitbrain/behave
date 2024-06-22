@@ -23,7 +23,7 @@ static func __filter_is_skipped(report :GdUnitReport) -> bool:
 	return report.is_skipped()
 
 
-func _init(execution_context_id :int):
+func _init(execution_context_id :int) -> void:
 	_execution_context_id = execution_context_id
 	GdUnitSignals.instance().gdunit_report.connect(on_reports)
 

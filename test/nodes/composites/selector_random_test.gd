@@ -26,11 +26,11 @@ func before_test() -> void:
 	action2 = auto_free(load(__count_up_action).new())
 	actor = auto_free(Node2D.new())
 	blackboard = auto_free(load(__blackboard).new())
-	
+
 	tree.add_child(selector)
 	selector.add_child(action1)
 	selector.add_child(action2)
-	
+
 	tree.actor = actor
 	tree.blackboard = blackboard
 

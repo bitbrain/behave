@@ -17,28 +17,32 @@ const exclude_scan_directories = [
 
 
 var _script_parser := GdScriptParser.new()
-var _extends_test_suite_classes := Array()
+var _included_resources :PackedStringArray = []
+var _excluded_resources :PackedStringArray = []
 var _expression_runner := GdUnitExpressionRunner.new()
+var _regex_extends_clazz_name := RegEx.create_from_string("extends[\\s]+([\\S]+)")
 
 
-func scan_testsuite_classes() -> void:
+func prescan_testsuite_classes() -> void:
 	# scan and cache extends GdUnitTestSuite by class name an resource paths
-	_extends_test_suite_classes.append("GdUnitTestSuite")
-	if ProjectSettings.has_setting("_global_script_classes"):
-		var script_classes:Array = ProjectSettings.get_setting("_global_script_classes") as Array
-		for element in script_classes:
-			var script_meta = element as Dictionary
-			if script_meta["base"] == "GdUnitTestSuite":
-				_extends_test_suite_classes.append(script_meta["class"])
+	var script_classes :Array[Dictionary] = ProjectSettings.get_global_class_list()
+	for script_meta in script_classes:
+		var base_class :String = script_meta["base"]
+		var resource_path :String = script_meta["path"]
+		if base_class == "GdUnitTestSuite":
+			_included_resources.append(resource_path)
+		elif ClassDB.class_exists(base_class):
+			_excluded_resources.append(resource_path)
 
 
 func scan(resource_path :String) -> Array[Node]:
-	scan_testsuite_classes()
+	prescan_testsuite_classes()
 	# if single testsuite requested
 	if FileAccess.file_exists(resource_path):
 		var test_suite := _parse_is_test_suite(resource_path)
-		if test_suite:
+		if test_suite != null:
 			return [test_suite]
+		return [] as Array[Node]
 	var base_dir := DirAccess.open(resource_path)
 	if base_dir == null:
 			prints("Given directory or file does not exists:", resource_path)
@@ -53,13 +57,13 @@ func _scan_test_suites(dir :DirAccess, collected_suites :Array[Node]) -> Array[N
 	dir.list_dir_begin() # TODOGODOT4 fill missing arguments https://github.com/godotengine/godot/pull/40547
 	var file_name := dir.get_next()
 	while file_name != "":
-		var resource_path = GdUnitTestSuiteScanner._file(dir, file_name)
+		var resource_path := GdUnitTestSuiteScanner._file(dir, file_name)
 		if dir.current_is_dir():
 			var sub_dir := DirAccess.open(resource_path)
 			if sub_dir != null:
 				_scan_test_suites(sub_dir, collected_suites)
 		else:
-			var time = LocalTime.now()
+			var time := LocalTime.now()
 			var test_suite := _parse_is_test_suite(resource_path)
 			if test_suite:
 				collected_suites.append(test_suite)
@@ -79,29 +83,44 @@ static func _file(dir :DirAccess, file_name :String) -> String:
 func _parse_is_test_suite(resource_path :String) -> Node:
 	if not GdUnitTestSuiteScanner._is_script_format_supported(resource_path):
 		return null
-	if GdUnit4MonoApiLoader.is_test_suite(resource_path):
-		return GdUnit4MonoApiLoader.parse_test_suite(resource_path)
-	var script :Script = ResourceLoader.load(resource_path)
+	if GdUnit4CSharpApiLoader.is_test_suite(resource_path):
+		return GdUnit4CSharpApiLoader.parse_test_suite(resource_path)
+
+	# We use the global cache to fast scan for test suites.
+	if _excluded_resources.has(resource_path):
+		return null
+	# Check in the global class cache whether the GdUnitTestSuite class has been extended.
+	if _included_resources.has(resource_path):
+		return _parse_test_suite(ResourceLoader.load(resource_path))
+
+	# Otherwise we need to scan manual, we need to exclude classes where direct extends form Godot classes
+	# the resource loader can fail to load e.g. plugin classes with do preload other scripts
+	var extends_from := get_extends_classname(resource_path)
+	# If not extends is defined or extends from a Godot class
+	if extends_from.is_empty() or ClassDB.class_exists(extends_from):
+		return null
+	# Finally, we need to load the class to determine it is a test suite
+	var script := ResourceLoader.load(resource_path)
 	if not GdObjects.is_test_suite(script):
 		return null
-	if GdObjects.is_gd_script(script):
-		return _parse_test_suite(script)
-	return null
+	return _parse_test_suite(ResourceLoader.load(resource_path))
 
 
 static func _is_script_format_supported(resource_path :String) -> bool:
 	var ext := resource_path.get_extension()
 	if ext == "gd":
 		return true
-	return GdUnit4MonoApiLoader.is_csharp_file(resource_path)
+	return GdUnit4CSharpApiLoader.is_csharp_file(resource_path)
 
 
 func _parse_test_suite(script :GDScript) -> GdUnitTestSuite:
-	var test_suite = script.new()
+	if not GdObjects.is_test_suite(script):
+		return null
+
+	var test_suite :GdUnitTestSuite = script.new()
 	test_suite.set_name(GdUnitTestSuiteScanner.parse_test_suite_name(script))
-	# find all test cases as array of names
-	var test_case_names := _extract_test_case_names(script)
 	# add test cases to test suite and parse test case line nummber
+	var test_case_names := _extract_test_case_names(script)
 	_parse_and_add_test_cases(test_suite, script, test_case_names)
 	# not all test case parsed?
 	# we have to scan the base class to
@@ -128,11 +147,11 @@ static func parse_test_suite_name(script :Script) -> String:
 	return script.resource_path.get_file().replace(".gd", "")
 
 
-func _handle_test_suite_arguments(test_suite, script :GDScript, fd :GdFunctionDescriptor):
+func _handle_test_suite_arguments(test_suite :Node, script :GDScript, fd :GdFunctionDescriptor) -> void:
 	for arg in fd.args():
 		match arg.name():
 			_TestCase.ARGUMENT_SKIP:
-				var result = _expression_runner.execute(script, arg.value_as_string())
+				var result :Variant = _expression_runner.execute(script, arg.value_as_string())
 				if result is bool:
 					test_suite.__is_skipped = result
 				else:
@@ -143,7 +162,7 @@ func _handle_test_suite_arguments(test_suite, script :GDScript, fd :GdFunctionDe
 				push_error("Unsuported argument `%s` found on before() at '%s'!" % [arg.name(), script.resource_path])
 
 
-func _handle_test_case_arguments(test_suite, script :GDScript, fd :GdFunctionDescriptor):
+func _handle_test_case_arguments(test_suite :Node, script :GDScript, fd :GdFunctionDescriptor) -> void:
 	var timeout := _TestCase.DEFAULT_TIMEOUT
 	var iterations := Fuzzer.ITERATION_DEFAULT_COUNT
 	var seed_value := -1
@@ -151,7 +170,7 @@ func _handle_test_case_arguments(test_suite, script :GDScript, fd :GdFunctionDes
 	var skip_reason := "Unknown."
 	var fuzzers :Array[GdFunctionArgument] = []
 	var test := _TestCase.new()
-	
+
 	for arg in fd.args():
 		# verify argument is allowed
 		# is test using fuzzers?
@@ -162,7 +181,7 @@ func _handle_test_case_arguments(test_suite, script :GDScript, fd :GdFunctionDes
 				_TestCase.ARGUMENT_TIMEOUT:
 					timeout = arg.default()
 				_TestCase.ARGUMENT_SKIP:
-					var result = _expression_runner.execute(script, arg.value_as_string())
+					var result :Variant = _expression_runner.execute(script, arg.value_as_string())
 					if result is bool:
 						is_skipped = result
 					else:
@@ -175,21 +194,15 @@ func _handle_test_case_arguments(test_suite, script :GDScript, fd :GdFunctionDes
 					seed_value = arg.default()
 	# create new test
 	test.configure(fd.name(), fd.line_number(), script.resource_path, timeout, fuzzers, iterations, seed_value)
+	test.set_function_descriptor(fd)
 	test.skip(is_skipped, skip_reason)
 	_validate_argument(fd, test)
 	test_suite.add_child(test)
-	# is parameterized test?
-	if fd.is_parameterized():
-		var test_paramaters := GdTestParameterSet.extract_test_parameters(test_suite.get_script(), fd)
-		var error := GdTestParameterSet.validate(fd.args(), test_paramaters)
-		if not error.is_empty():
-			test.skip(true, error)
-		test.set_test_parameters(test_paramaters)
 
 
-func _parse_and_add_test_cases(test_suite, script :GDScript, test_case_names :PackedStringArray):
-	var test_cases_to_find = Array(test_case_names)
-	var functions_to_scan := test_case_names
+func _parse_and_add_test_cases(test_suite :Node, script :GDScript, test_case_names :PackedStringArray) -> void:
+	var test_cases_to_find := Array(test_case_names)
+	var functions_to_scan := test_case_names.duplicate()
 	functions_to_scan.append("before")
 	var source := _script_parser.load_source_code(script, [script.resource_path])
 	var function_descriptors := _script_parser.parse_functions(source, "", [script.resource_path], functions_to_scan)
@@ -228,22 +241,22 @@ static func _to_naming_convention(file_name :String) -> String:
 
 
 static func resolve_test_suite_path(source_script_path :String, test_root_folder :String = "test") -> String:
-	var file_name = source_script_path.get_basename().get_file()
+	var file_name := source_script_path.get_basename().get_file()
 	var suite_name := _to_naming_convention(file_name)
 	if test_root_folder.is_empty() or test_root_folder == "/":
 		return source_script_path.replace(file_name, suite_name)
-	
+
 	# is user tmp
 	if source_script_path.begins_with("user://tmp"):
 		return normalize_path(source_script_path.replace("user://tmp", "user://tmp/" + test_root_folder)).replace(file_name, suite_name)
-	
+
 	# at first look up is the script under a "src" folder located
 	var test_suite_path :String
-	var src_folder = source_script_path.find("/src/")
+	var src_folder := source_script_path.find("/src/")
 	if src_folder != -1:
 		test_suite_path = source_script_path.replace("/src/", "/"+test_root_folder+"/")
 	else:
-		var paths = source_script_path.split("/", false)
+		var paths := source_script_path.split("/", false)
 		# is a plugin script?
 		if paths[1] == "addons":
 			test_suite_path = "%s//addons/%s/%s" % [paths[0], paths[2], test_root_folder]
@@ -264,9 +277,9 @@ static func normalize_path(path :String) -> String:
 static func create_test_suite(test_suite_path :String, source_path :String) -> GdUnitResult:
 	# create directory if not exists
 	if not DirAccess.dir_exists_absolute(test_suite_path.get_base_dir()):
-		var error := DirAccess.make_dir_recursive_absolute(test_suite_path.get_base_dir())
-		if error != OK:
-			return GdUnitResult.error("Can't create directoy  at: %s. Error code %s" % [test_suite_path.get_base_dir(), error])
+		var error_ := DirAccess.make_dir_recursive_absolute(test_suite_path.get_base_dir())
+		if error_ != OK:
+			return GdUnitResult.error("Can't create directoy  at: %s. Error code %s" % [test_suite_path.get_base_dir(), error_])
 	var script := GDScript.new()
 	script.source_code = GdUnitTestSuiteTemplate.build_template(source_path)
 	var error := ResourceSaver.save(script, test_suite_path)
@@ -292,14 +305,30 @@ static func get_test_case_line_number(resource_path :String, func_name :String) 
 	return -1
 
 
+func get_extends_classname(resource_path :String) -> String:
+	var file := FileAccess.open(resource_path, FileAccess.READ)
+	if file != null:
+		while not file.eof_reached():
+			var row := file.get_line()
+			# skip comments and empty lines
+			if row.begins_with("#") || row.length() == 0:
+				continue
+			# Stop at first function
+			if row.contains("func"):
+				return ""
+			var result := _regex_extends_clazz_name.search(row)
+			if result != null:
+				return result.get_string(1)
+	return ""
+
+
 static func add_test_case(resource_path :String, func_name :String)  -> GdUnitResult:
 	var script := load(resource_path) as GDScript
 	# count all exiting lines and add two as space to add new test case
 	var line_number := count_lines(script) + 2
 	var func_body := TEST_FUNC_TEMPLATE.replace("${func_name}", func_name)
 	if Engine.is_editor_hint():
-		var ep :EditorPlugin = Engine.get_meta("GdUnitEditorPlugin")
-		var settings := ep.get_editor_interface().get_editor_settings()
+		var settings := EditorInterface.get_editor_settings()
 		var ident_type :int = settings.get_setting("text_editor/behavior/indent/type")
 		var ident_size :int = settings.get_setting("text_editor/behavior/indent/size")
 		if ident_type == 1:
@@ -331,7 +360,7 @@ static func create_test_case(test_suite_path :String, func_name :String, source_
 	if test_case_exists(test_suite_path, func_name):
 		var line_number := get_test_case_line_number(test_suite_path, func_name)
 		return GdUnitResult.success({ "path" : test_suite_path, "line" : line_number})
-	
+
 	if not test_suite_exists(test_suite_path):
 		var result := create_test_suite(test_suite_path, source_script_path)
 		if result.is_error():

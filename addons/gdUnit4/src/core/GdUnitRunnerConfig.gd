@@ -72,10 +72,10 @@ func add_test_case(p_resource_path :String, test_name :StringName, test_param_in
 # '/path/path', res://path/path', 'res://path/path/testsuite.gd' or 'testsuite'
 # 'res://path/path/testsuite.gd:test_case' or 'testsuite:test_case'
 func skip_test_suite(value :StringName) -> GdUnitRunnerConfig:
-	var parts :Array =  GdUnitTools.make_qualified_path(value).rsplit(":")
+	var parts :Array =  GdUnitFileAccess.make_qualified_path(value).rsplit(":")
 	if parts[0] == "res":
 		parts.pop_front()
-	parts[0] = GdUnitTools.make_qualified_path(parts[0])
+	parts[0] = GdUnitFileAccess.make_qualified_path(parts[0])
 	match parts.size():
 		1: skipped()[parts[0]] = PackedStringArray()
 		2: skip_test_case(parts[0], parts[1])
@@ -96,19 +96,20 @@ func skip_test_case(p_resource_path :String, test_name :StringName) -> GdUnitRun
 	return self
 
 
+# Dictionary[String, Dictionary[String, PackedStringArray]]
 func to_execute() -> Dictionary:
 	return _config.get(INCLUDED, {"res://" : PackedStringArray()})
 
 
 func skipped() -> Dictionary:
-	return _config.get(SKIPPED, PackedStringArray())
+	return _config.get(SKIPPED, {})
 
 
 func save_config(path :String = CONFIG_FILE) -> GdUnitResult:
 	var file := FileAccess.open(path, FileAccess.WRITE)
 	if file == null:
-		var error = FileAccess.get_open_error()
-		return GdUnitResult.error("Can't write test runner configuration '%s'! %s" % [path, GdUnitTools.error_as_string(error)])
+		var error := FileAccess.get_open_error()
+		return GdUnitResult.error("Can't write test runner configuration '%s'! %s" % [path, error_string(error)])
 	_config[VERSION] = CONFIG_VERSION
 	file.store_string(JSON.stringify(_config))
 	return GdUnitResult.success(path)
@@ -119,8 +120,8 @@ func load_config(path :String = CONFIG_FILE) -> GdUnitResult:
 		return GdUnitResult.error("Can't find test runner configuration '%s'! Please select a test to run." % path)
 	var file := FileAccess.open(path, FileAccess.READ)
 	if file == null:
-		var error = FileAccess.get_open_error()
-		return GdUnitResult.error("Can't load test runner configuration '%s'! ERROR: %s." % [path, GdUnitTools.error_as_string(error)])
+		var error := FileAccess.get_open_error()
+		return GdUnitResult.error("Can't load test runner configuration '%s'! ERROR: %s." % [path, error_string(error)])
 	var content := file.get_as_text()
 	if not content.is_empty() and content[0] == '{':
 		# Parse as json
@@ -135,7 +136,7 @@ func load_config(path :String = CONFIG_FILE) -> GdUnitResult:
 	return GdUnitResult.success(path)
 
 
-func fix_value_types():
+func fix_value_types() -> void:
 	# fix float value to int json stores all numbers as float
 	var server_port_ :int = _config.get(SERVER_PORT, -1)
 	_config[SERVER_PORT] = server_port_
@@ -143,8 +144,8 @@ func fix_value_types():
 	convert_Array_to_PackedStringArray(_config[SKIPPED])
 
 
-func convert_Array_to_PackedStringArray(data :Dictionary):
-	for key in data.keys():
+func convert_Array_to_PackedStringArray(data :Dictionary) -> void:
+	for key in data.keys() as Array[String]:
 		var values :Array = data[key]
 		data[key] = PackedStringArray(values)
 

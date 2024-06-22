@@ -28,4 +28,3 @@ static func process_begin(instance_id: int) -> void:
 static func process_end(instance_id: int) -> void:
 	if can_send_message():
 		EngineDebugger.send_message("beehave:process_end", [instance_id])
-

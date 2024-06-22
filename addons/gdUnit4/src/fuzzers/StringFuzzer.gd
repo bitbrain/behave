@@ -9,19 +9,20 @@ var _max_length :int
 var _charset :PackedByteArray
 
 
-func _init(min_length :int,max_length :int,pattern :String = DEFAULT_CHARSET):
+func _init(min_length :int, max_length :int, pattern :String = DEFAULT_CHARSET) -> void:
 	assert(min_length>0 and min_length < max_length)
 	assert(not null or not pattern.is_empty())
 	_min_length = min_length
 	_max_length = max_length
 	_charset = StringFuzzer.extract_charset(pattern)
 
+
 static func extract_charset(pattern :String) -> PackedByteArray:
 	var reg := RegEx.new()
 	if reg.compile(pattern) != OK:
 		push_error("Invalid pattern to generate Strings! Use e.g  'a-zA-Z0-9+-_'")
 		return PackedByteArray()
-	
+
 	var charset := Array()
 	var char_before := -1
 	var index := 0
@@ -46,16 +47,18 @@ static func extract_charset(pattern :String) -> PackedByteArray:
 		charset.append(char_current)
 	return PackedByteArray(charset)
 
-static func build_chars(from :int, to :int) -> Array:
-	var characters := Array()
+
+static func build_chars(from :int, to :int) -> Array[int]:
+	var characters :Array[int] = []
 	for character in range(from+1, to+1):
 		characters.append(character)
 	return characters
 
-func next_value() -> Variant:
+
+func next_value() -> String:
 	var value := PackedByteArray()
 	var max_char := len(_charset)
 	var length :int = max(_min_length, randi() % _max_length)
 	for i in length:
 		value.append(_charset[randi() % max_char])
-	return value.get_string_from_ascii()
+	return value.get_string_from_utf8()

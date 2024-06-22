@@ -12,10 +12,10 @@ class_name BlackboardHasCondition extends ConditionLeaf
 
 func tick(actor: Node, blackboard: Blackboard) -> int:
 	var key_value: Variant = _key_expression.execute([], blackboard)
-	
+
 	if _key_expression.has_execute_failed():
 		return FAILURE
-	
+
 	return SUCCESS if blackboard.has_value(key_value) else FAILURE
 
 

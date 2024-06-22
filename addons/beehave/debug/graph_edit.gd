@@ -11,7 +11,6 @@ const INACTIVE_COLOR: Color = Color("#898989aa")
 const ACTIVE_COLOR: Color = Color("#ffcc00c8")
 const SUCCESS_COLOR: Color = Color("#009944c8")
 
-
 var updating_graph: bool = false
 var arraging_nodes: bool = false
 var beehave_tree: Dictionary:
@@ -32,14 +31,13 @@ var horizontal_layout: bool = false:
 		_update_layout_button()
 		_update_graph()
 
-
-var frames:RefCounted
+var frames: RefCounted
 var active_nodes: Array[String]
 var progress: int = 0
 var layout_button: Button
 
 
-func _init(frames:RefCounted) -> void:
+func _init(frames: RefCounted) -> void:
 	self.frames = frames
 
 
@@ -271,11 +269,15 @@ func _draw() -> void:
 
 		# Godot 4.0+
 		if from.has_method("get_connection_output_position"):
-			output_port_position = from.position + from.call("get_connection_output_position", c.from_port)
+			output_port_position = (
+				from.position + from.call("get_connection_output_position", c.from_port)
+			)
 			input_port_position = to.position + to.call("get_connection_input_position", c.to_port)
 		# Godot 4.2+
 		else:
-			output_port_position = from.position + from.call("get_output_port_position", c.from_port)
+			output_port_position = (
+				from.position + from.call("get_output_port_position", c.from_port)
+			)
 			input_port_position = to.position + to.call("get_input_port_position", c.to_port)
 
 		var line := _get_connection_line(output_port_position, input_port_position)
@@ -302,4 +304,6 @@ func _draw() -> void:
 
 func _update_layout_button() -> void:
 	layout_button.icon = VERTICAL_LAYOUT_ICON if horizontal_layout else HORIZONTAL_LAYOUT_ICON
-	layout_button.tooltip_text = "Switch to Vertical layout" if horizontal_layout else "Switch to Horizontal layout"
+	layout_button.tooltip_text = (
+		"Switch to Vertical layout" if horizontal_layout else "Switch to Horizontal layout"
+	)

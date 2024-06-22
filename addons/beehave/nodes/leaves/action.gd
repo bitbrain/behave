@@ -7,6 +7,7 @@ class_name ActionLeaf extends Leaf
 ## frame executions. In this case, the node should return `RUNNING` until the
 ## action is completed.
 
+
 func get_class_name() -> Array[StringName]:
 	var classes := super()
 	classes.push_back(&"ActionLeaf")

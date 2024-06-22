@@ -21,7 +21,7 @@ static func report_error(message:String, line_number :int) -> void:
 	GdAssertReports.set_last_error_line_number(line_number)
 	Engine.set_meta(LAST_ERROR, message)
 	# if we expect to fail we handle as success test
-	if is_expect_fail():
+	if _do_expect_assert_failing():
 		return
 	send_report(GdUnitReport.new().create(GdUnitReport.FAILURE, line_number, message))
 
@@ -40,13 +40,9 @@ static func get_last_error_line_number() -> int:
 	return -1
 
 
-static func expect_fail(enabled :bool = true):
-	Engine.set_meta("report_failures", enabled)
-
-
-static func is_expect_fail() -> bool:
-	if Engine.has_meta("report_failures"):
-		return Engine.get_meta("report_failures")
+static func _do_expect_assert_failing() -> bool:
+	if Engine.has_meta(GdUnitConstants.EXPECT_ASSERT_REPORT_FAILURES):
+		return Engine.get_meta(GdUnitConstants.EXPECT_ASSERT_REPORT_FAILURES)
 	return false
 
 

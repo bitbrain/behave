@@ -8,10 +8,11 @@ extends GdUnitTestSuite
 const __source = "res://addons/beehave/debug/debugger_tab.gd"
 const TestScene = preload("res://test/debug/debugger_test_scene.tscn")
 
+
 func create_scene() -> Node2D:
 	return auto_free(TestScene.instantiate())
-	
-	
+
+
 func test_debugger_renders_correctly():
 	var scene = create_scene()
 	var runner = scene_runner(scene)

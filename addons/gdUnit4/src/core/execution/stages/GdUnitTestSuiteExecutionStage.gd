@@ -49,7 +49,7 @@ func clone_test_suite(test_suite :GdUnitTestSuite) -> GdUnitTestSuite:
 	dispose_timers(test_suite)
 	await GdUnitMemoryObserver.gc_guarded_instance("Manually free on awaiter", test_suite.__awaiter)
 	var parent := test_suite.get_parent()
-	var _test_suite = GdUnitTestSuite.new()
+	var _test_suite := GdUnitTestSuite.new()
 	parent.remove_child(test_suite)
 	copy_properties(test_suite, _test_suite)
 	for child in test_suite.get_children():
@@ -63,7 +63,7 @@ func clone_test_suite(test_suite :GdUnitTestSuite) -> GdUnitTestSuite:
 	return _test_suite
 
 
-func dispose_timers(test_suite :GdUnitTestSuite):
+func dispose_timers(test_suite :GdUnitTestSuite) -> void:
 	GdUnitTools.release_timers()
 	for child in test_suite.get_children():
 		if child is Timer:
@@ -72,11 +72,11 @@ func dispose_timers(test_suite :GdUnitTestSuite):
 			child.free()
 
 
-func copy_properties(source :Object, target :Object):
+func copy_properties(source :Object, target :Object) -> void:
 	if not source is _TestCase and not source is GdUnitTestSuite:
 		return
 	for property in source.get_property_list():
-		var property_name = property["name"]
+		var property_name :String = property["name"]
 		if property_name == "__awaiter":
 			continue
 		target.set(property_name, source.get(property_name))
@@ -87,7 +87,7 @@ func fire_test_suite_skipped(context :GdUnitExecutionContext) -> void:
 	var skip_count := test_suite.get_child_count()
 	fire_event(GdUnitEvent.new()\
 		.suite_before(test_suite.get_script().resource_path, test_suite.get_name(), skip_count))
-	var statistics = {
+	var statistics := {
 		GdUnitEvent.ORPHAN_NODES: 0,
 		GdUnitEvent.ELAPSED_TIME: 0,
 		GdUnitEvent.WARNINGS: false,
@@ -103,7 +103,7 @@ func fire_test_suite_skipped(context :GdUnitExecutionContext) -> void:
 	await Engine.get_main_loop().process_frame
 
 
-func set_debug_mode(debug_mode :bool = false):
+func set_debug_mode(debug_mode :bool = false) -> void:
 	super.set_debug_mode(debug_mode)
 	_stage_before.set_debug_mode(debug_mode)
 	_stage_after.set_debug_mode(debug_mode)

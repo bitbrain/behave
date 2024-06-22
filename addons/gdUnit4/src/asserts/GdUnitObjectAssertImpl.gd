@@ -3,27 +3,28 @@ extends GdUnitObjectAssert
 var _base :GdUnitAssert
 
 
-func _init(current):
-	_base = ResourceLoader.load("res://addons/gdUnit4/src/asserts/GdUnitAssertImpl.gd", "GDScript", ResourceLoader.CACHE_MODE_REUSE).new(current)
+func _init(current :Variant) -> void:
+	_base = ResourceLoader.load("res://addons/gdUnit4/src/asserts/GdUnitAssertImpl.gd", "GDScript",
+								ResourceLoader.CACHE_MODE_REUSE).new(current)
 	# save the actual assert instance on the current thread context
 	GdUnitThreadManager.get_current_context().set_assert(self)
 	if (current != null
-		and (_base.__validate_value_type(current, TYPE_BOOL)
-		or _base.__validate_value_type(current, TYPE_INT)
-		or _base.__validate_value_type(current, TYPE_FLOAT)
-		or _base.__validate_value_type(current, TYPE_STRING))):
+		and (GdUnitAssertions.validate_value_type(current, TYPE_BOOL)
+		or GdUnitAssertions.validate_value_type(current, TYPE_INT)
+		or GdUnitAssertions.validate_value_type(current, TYPE_FLOAT)
+		or GdUnitAssertions.validate_value_type(current, TYPE_STRING))):
 			report_error("GdUnitObjectAssert inital error, unexpected type <%s>" % GdObjects.typeof_as_string(current))
 
 
-func _notification(event):
+func _notification(event :int) -> void:
 	if event == NOTIFICATION_PREDELETE:
 		if _base != null:
 			_base.notification(event)
 			_base = null
 
 
-func __current() -> Variant:
-	return _base.__current()
+func current_value() -> Variant:
+	return _base.current_value()
 
 
 func report_success() -> GdUnitObjectAssert:
@@ -36,7 +37,7 @@ func report_error(error :String) -> GdUnitObjectAssert:
 	return self
 
 
-func _failure_message() -> String:
+func failure_message() -> String:
 	return _base._current_error_message
 
 
@@ -45,12 +46,12 @@ func override_failure_message(message :String) -> GdUnitObjectAssert:
 	return self
 
 
-func is_equal(expected) -> GdUnitObjectAssert:
+func is_equal(expected :Variant) -> GdUnitObjectAssert:
 	_base.is_equal(expected)
 	return self
 
 
-func is_not_equal(expected) -> GdUnitObjectAssert:
+func is_not_equal(expected :Variant) -> GdUnitObjectAssert:
 	_base.is_not_equal(expected)
 	return self
 
@@ -66,8 +67,8 @@ func is_not_null() -> GdUnitObjectAssert:
 
 
 @warning_ignore("shadowed_global_identifier")
-func is_same(expected) -> GdUnitObjectAssert:
-	var current :Variant = __current()
+func is_same(expected :Variant) -> GdUnitObjectAssert:
+	var current :Variant = current_value()
 	if not is_same(current, expected):
 		report_error(GdAssertMessages.error_is_same(current, expected))
 		return self
@@ -75,8 +76,8 @@ func is_same(expected) -> GdUnitObjectAssert:
 	return self
 
 
-func is_not_same(expected) -> GdUnitObjectAssert:
-	var current = __current()
+func is_not_same(expected :Variant) -> GdUnitObjectAssert:
+	var current :Variant = current_value()
 	if is_same(current, expected):
 		report_error(GdAssertMessages.error_not_same(current, expected))
 		return self
@@ -85,8 +86,8 @@ func is_not_same(expected) -> GdUnitObjectAssert:
 
 
 func is_instanceof(type :Object) -> GdUnitObjectAssert:
-	var current :Object = __current()
-	if not is_instance_of(current, type):
+	var current :Variant = current_value()
+	if current == null or not is_instance_of(current, type):
 		var result_expected: = GdObjects.extract_class_name(type)
 		var result_current: = GdObjects.extract_class_name(current)
 		report_error(GdAssertMessages.error_is_instanceof(result_current, result_expected))
@@ -95,8 +96,8 @@ func is_instanceof(type :Object) -> GdUnitObjectAssert:
 	return self
 
 
-func is_not_instanceof(type) -> GdUnitObjectAssert:
-	var current :Variant = __current()
+func is_not_instanceof(type :Variant) -> GdUnitObjectAssert:
+	var current :Variant = current_value()
 	if is_instance_of(current, type):
 		var result: = GdObjects.extract_class_name(type)
 		if result.is_success():

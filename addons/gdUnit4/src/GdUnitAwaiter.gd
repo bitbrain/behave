@@ -11,21 +11,20 @@ const GdUnitAssertImpl = preload("res://addons/gdUnit4/src/asserts/GdUnitAssertI
 # timeout: the timeout in ms, default is set to 2000ms
 func await_signal_on(source :Object, signal_name :String, args :Array = [], timeout_millis :int = 2000) -> Variant:
 	# fail fast if the given source instance invalid
-	var line_number := GdUnitAssert._get_line_number()
+	var assert_that := GdUnitAssertImpl.new(signal_name)
+	var line_number := GdUnitAssertions.get_line_number()
 	if not is_instance_valid(source):
-		GdUnitAssertImpl.new(signal_name)\
-			.report_error(GdAssertMessages.error_await_signal_on_invalid_instance(source, signal_name, args), line_number)
+		assert_that.report_error(GdAssertMessages.error_await_signal_on_invalid_instance(source, signal_name, args), line_number)
 		return await Engine.get_main_loop().process_frame
 	# fail fast if the given source instance invalid
 	if not is_instance_valid(source):
-		GdUnitAssertImpl.new(signal_name)\
-			.report_error(GdAssertMessages.error_await_signal_on_invalid_instance(source, signal_name, args), line_number)
+		assert_that.report_error(GdAssertMessages.error_await_signal_on_invalid_instance(source, signal_name, args), line_number)
 		return await await_idle_frame()
 	var awaiter := GdUnitSignalAwaiter.new(timeout_millis)
 	var value :Variant = await awaiter.on_signal(source, signal_name, args)
 	if awaiter.is_interrupted():
-		var failure = "await_signal_on(%s, %s) timed out after %sms" % [signal_name, args, timeout_millis]
-		GdUnitAssertImpl.new(signal_name).report_error(failure, line_number)
+		var failure := "await_signal_on(%s, %s) timed out after %sms" % [signal_name, args, timeout_millis]
+		assert_that.report_error(failure, line_number)
 	return value
 
 
@@ -35,7 +34,7 @@ func await_signal_on(source :Object, signal_name :String, args :Array = [], time
 # args: the expected signal arguments as an array
 # timeout: the timeout in ms, default is set to 2000ms
 func await_signal_idle_frames(source :Object, signal_name :String, args :Array = [], timeout_millis :int = 2000) -> Variant:
-	var line_number := GdUnitAssert._get_line_number()
+	var line_number := GdUnitAssertions.get_line_number()
 	# fail fast if the given source instance invalid
 	if not is_instance_valid(source):
 		GdUnitAssertImpl.new(signal_name)\
@@ -44,7 +43,7 @@ func await_signal_idle_frames(source :Object, signal_name :String, args :Array =
 	var awaiter := GdUnitSignalAwaiter.new(timeout_millis, true)
 	var value :Variant = await awaiter.on_signal(source, signal_name, args)
 	if awaiter.is_interrupted():
-		var failure = "await_signal_idle_frames(%s, %s) timed out after %sms" % [signal_name, args, timeout_millis]
+		var failure := "await_signal_idle_frames(%s, %s) timed out after %sms" % [signal_name, args, timeout_millis]
 		GdUnitAssertImpl.new(signal_name).report_error(failure, line_number)
 	return value
 

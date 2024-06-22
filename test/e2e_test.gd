@@ -7,9 +7,10 @@ extends GdUnitTestSuite
 # TestSuite generated from
 const __source = "res://examples/beehave_test_scene.tscn"
 
+
 func create_scene() -> Node2D:
 	return auto_free(load(__source).instantiate())
-	
+
 
 func test_changing_to_all_colors() -> void:
 	var scene = create_scene()

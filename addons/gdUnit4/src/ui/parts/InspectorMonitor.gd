@@ -1,25 +1,29 @@
 @tool
 extends PanelContainer
 
-signal jump_to_orphan_nodes
+signal jump_to_orphan_nodes()
 
-@onready var ICON_GREEN = load("res://addons/gdUnit4/src/ui/assets/orphan/orphan_green.svg")
-@onready var ICON_RED = load("res://addons/gdUnit4/src/ui/assets/orphan/orphan_animated_icon.tres")
+@onready var ICON_GREEN := GdUnitUiTools.get_icon("Unlinked", Color.WEB_GREEN)
+@onready var ICON_RED := GdUnitUiTools.get_color_animated_icon("Unlinked", Color.YELLOW, Color.ORANGE_RED)
 
-@onready var _time = $GridContainer/Time/value
-@onready var _orphans = $GridContainer/Orphan/value
-@onready var _orphan_button := $GridContainer/Orphan/Button
+@onready var _button_time := %btn_time
+@onready var _time := %time_value
+@onready var _orphans := %orphan_value
+@onready var _orphan_button := %btn_orphan
 
 var total_elapsed_time := 0
 var total_orphans := 0
 
-func _ready():
+
+func _ready() -> void:
 	GdUnitSignals.instance().gdunit_event.connect(_on_gdunit_event)
 	_time.text = ""
 	_orphans.text = "0"
+	_button_time.icon = GdUnitUiTools.get_icon("Time")
+	_orphan_button.icon = ICON_GREEN
 
 
-func status_changed(elapsed_time :int, orphan_nodes :int):
+func status_changed(elapsed_time: int, orphan_nodes: int) -> void:
 	total_elapsed_time += elapsed_time
 	total_orphans += orphan_nodes
 	_time.text = LocalTime.elapsed(total_elapsed_time)
@@ -28,7 +32,7 @@ func status_changed(elapsed_time :int, orphan_nodes :int):
 		_orphan_button.icon = ICON_RED
 
 
-func _on_gdunit_event(event :GdUnitEvent) -> void:
+func _on_gdunit_event(event: GdUnitEvent) -> void:
 	match event.type():
 		GdUnitEvent.INIT:
 			_orphan_button.icon = ICON_GREEN
@@ -45,5 +49,5 @@ func _on_gdunit_event(event :GdUnitEvent) -> void:
 			status_changed(event.elapsed_time(), event.orphan_nodes())
 
 
-func _on_ToolButton_pressed():
-	emit_signal("jump_to_orphan_nodes")
+func _on_ToolButton_pressed() -> void:
+	jump_to_orphan_nodes.emit()

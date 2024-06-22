@@ -15,25 +15,25 @@ func is_not_null() -> GdUnitArrayAssert:
 
 ## Verifies that the current Array is equal to the given one.
 @warning_ignore("unused_parameter")
-func is_equal(expected) -> GdUnitArrayAssert:
+func is_equal(expected :Variant) -> GdUnitArrayAssert:
 	return self
 
 
 ## Verifies that the current Array is equal to the given one, ignoring case considerations.
 @warning_ignore("unused_parameter")
-func is_equal_ignoring_case(expected) -> GdUnitArrayAssert:
+func is_equal_ignoring_case(expected :Variant) -> GdUnitArrayAssert:
 	return self
 
 
 ## Verifies that the current Array is not equal to the given one.
 @warning_ignore("unused_parameter")
-func is_not_equal(expected) -> GdUnitArrayAssert:
+func is_not_equal(expected :Variant) -> GdUnitArrayAssert:
 	return self
 
 
 ## Verifies that the current Array is not equal to the given one, ignoring case considerations.
 @warning_ignore("unused_parameter")
-func is_not_equal_ignoring_case(expected) -> GdUnitArrayAssert:
+func is_not_equal_ignoring_case(expected :Variant) -> GdUnitArrayAssert:
 	return self
 
 
@@ -49,14 +49,14 @@ func is_not_empty() -> GdUnitArrayAssert:
 ## Verifies that the current Array is the same. [br]
 ## Compares the current by object reference equals
 @warning_ignore("unused_parameter", "shadowed_global_identifier")
-func is_same(expected) -> GdUnitArrayAssert:
+func is_same(expected :Variant) -> GdUnitArrayAssert:
 	return self
 
 
 ## Verifies that the current Array is NOT the same. [br]
 ## Compares the current by object reference equals
 @warning_ignore("unused_parameter", "shadowed_global_identifier")
-func is_not_same(expected) -> GdUnitArrayAssert:
+func is_not_same(expected :Variant) -> GdUnitArrayAssert:
 	return self
 
 
@@ -69,42 +69,42 @@ func has_size(expectd: int) -> GdUnitArrayAssert:
 ## Verifies that the current Array contains the given values, in any order.[br]
 ## The values are compared by deep parameter comparision, for object reference compare you have to use [method contains_same]
 @warning_ignore("unused_parameter")
-func contains(expected) -> GdUnitArrayAssert:
+func contains(expected :Variant) -> GdUnitArrayAssert:
 	return self
 
 
 ## Verifies that the current Array contains exactly only the given values and nothing else, in same order.[br]
 ## The values are compared by deep parameter comparision, for object reference compare you have to use [method contains_same_exactly]
 @warning_ignore("unused_parameter")
-func contains_exactly(expected) -> GdUnitArrayAssert:
+func contains_exactly(expected :Variant) -> GdUnitArrayAssert:
 	return self
 
 
 ## Verifies that the current Array contains exactly only the given values and nothing else, in any order.[br]
 ## The values are compared by deep parameter comparision, for object reference compare you have to use [method contains_same_exactly_in_any_order]
 @warning_ignore("unused_parameter")
-func contains_exactly_in_any_order(expected) -> GdUnitArrayAssert:
+func contains_exactly_in_any_order(expected :Variant) -> GdUnitArrayAssert:
 	return self
 
 
 ## Verifies that the current Array contains the given values, in any order.[br]
 ## The values are compared by object reference, for deep parameter comparision use [method contains]
 @warning_ignore("unused_parameter")
-func contains_same(expected) -> GdUnitArrayAssert:
+func contains_same(expected :Variant) -> GdUnitArrayAssert:
 	return self
 
 
 ## Verifies that the current Array contains exactly only the given values and nothing else, in same order.[br]
 ## The values are compared by object reference, for deep parameter comparision use [method contains_exactly]
 @warning_ignore("unused_parameter")
-func contains_same_exactly(expected) -> GdUnitArrayAssert:
+func contains_same_exactly(expected :Variant) -> GdUnitArrayAssert:
 	return self
 
 
 ## Verifies that the current Array contains exactly only the given values and nothing else, in any order.[br]
 ## The values are compared by object reference, for deep parameter comparision use [method contains_exactly_in_any_order]
 @warning_ignore("unused_parameter")
-func contains_same_exactly_in_any_order(expected) -> GdUnitArrayAssert:
+func contains_same_exactly_in_any_order(expected :Variant) -> GdUnitArrayAssert:
 	return self
 
 
@@ -118,7 +118,7 @@ func contains_same_exactly_in_any_order(expected) -> GdUnitArrayAssert:
 ## assert_array([1, 2, 3, 4, 5]).not_contains([2, 6])
 ## [/codeblock]
 @warning_ignore("unused_parameter")
-func not_contains(expected) -> GdUnitArrayAssert:
+func not_contains(expected :Variant) -> GdUnitArrayAssert:
 	return self
 
 
@@ -132,7 +132,7 @@ func not_contains(expected) -> GdUnitArrayAssert:
 ## assert_array([1, 2, 3, 4, 5]).not_contains([2, 6])
 ## [/codeblock]
 @warning_ignore("unused_parameter")
-func not_contains_same(expected) -> GdUnitArrayAssert:
+func not_contains_same(expected :Variant) -> GdUnitArrayAssert:
 	return self
 
 

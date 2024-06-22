@@ -7,6 +7,7 @@ class_name SelectorReactiveComposite extends Composite
 ## return `FAILURE`.
 ## If a child returns `RUNNING` it will restart.
 
+
 func tick(actor: Node, blackboard: Blackboard) -> int:
 	for c in get_children():
 		if c != running_child:

@@ -9,7 +9,7 @@ var _signal_collector :GdUnitSignalCollector
 var _execution_context :GdUnitExecutionContext
 
 
-func _init(thread :Thread = null):
+func _init(thread :Thread = null) -> void:
 	if thread != null:
 		_thread = thread
 		_thread_name = thread.get_meta("name")

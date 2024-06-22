@@ -1,16 +1,16 @@
-class_name GdUnitSpyFunctionDoubler 
+class_name GdUnitSpyFunctionDoubler
 extends GdFunctionDoubler
 
 
 const TEMPLATE_RETURN_VARIANT = """
 	var args :Array = ["$(func_name)", $(arguments)]
-	
+
 	if $(instance)__is_verify_interactions():
 		$(instance)__verify_interactions(args)
 		return ${default_return_value}
 	else:
 		$(instance)__save_function_interaction(args)
-	
+
 	if $(instance)__do_call_real_func("$(func_name)"):
 		return $(await)super($(arguments))
 	return ${default_return_value}
@@ -20,13 +20,13 @@ const TEMPLATE_RETURN_VARIANT = """
 
 const TEMPLATE_RETURN_VOID = """
 	var args :Array = ["$(func_name)", $(arguments)]
-	
+
 	if $(instance)__is_verify_interactions():
 		$(instance)__verify_interactions(args)
 		return
 	else:
 		$(instance)__save_function_interaction(args)
-	
+
 	if $(instance)__do_call_real_func("$(func_name)"):
 		$(await)super($(arguments))
 
@@ -36,13 +36,13 @@ const TEMPLATE_RETURN_VOID = """
 const TEMPLATE_RETURN_VOID_VARARG = """
 	var varargs :Array = __filter_vargs([$(varargs)])
 	var args :Array = ["$(func_name)", $(arguments)] + varargs
-	
+
 	if $(instance)__is_verify_interactions():
 		$(instance)__verify_interactions(args)
 		return
 	else:
 		$(instance)__save_function_interaction(args)
-	
+
 	$(await)$(instance)__call_func("$(func_name)", [$(arguments)] + varargs)
 
 """
@@ -51,19 +51,19 @@ const TEMPLATE_RETURN_VOID_VARARG = """
 const TEMPLATE_RETURN_VARIANT_VARARG = """
 	var varargs :Array = __filter_vargs([$(varargs)])
 	var args :Array = ["$(func_name)", $(arguments)] + varargs
-	
+
 	if $(instance)__is_verify_interactions():
 		$(instance)__verify_interactions(args)
 		return ${default_return_value}
 	else:
 		$(instance)__save_function_interaction(args)
-	
+
 	return $(await)$(instance)__call_func("$(func_name)", [$(arguments)] + varargs)
 
 """
 
 
-func _init(push_errors :bool = false):
+func _init(push_errors :bool = false) -> void:
 	super._init(push_errors)
 
 

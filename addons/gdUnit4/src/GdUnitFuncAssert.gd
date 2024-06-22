@@ -17,14 +17,14 @@ func is_not_null() -> GdUnitFuncAssert:
 
 ## Verifies that the current value is equal to the given one.
 @warning_ignore("unused_parameter")
-func is_equal(expected) -> GdUnitFuncAssert:
+func is_equal(expected :Variant) -> GdUnitFuncAssert:
 	await Engine.get_main_loop().process_frame
 	return self
 
 
 ## Verifies that the current value is not equal to the given one.
 @warning_ignore("unused_parameter")
-func is_not_equal(expected) -> GdUnitFuncAssert:
+func is_not_equal(expected :Variant) -> GdUnitFuncAssert:
 	await Engine.get_main_loop().process_frame
 	return self
 

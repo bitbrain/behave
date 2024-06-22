@@ -15,22 +15,22 @@ var action: ActionLeaf
 var time_limiter: TimeLimiterDecorator
 var actor: Node2D
 var blackboard: Blackboard
-var runner:GdUnitSceneRunner
+var runner: GdUnitSceneRunner
 
 
 func before_test() -> void:
 	tree = auto_free(load(__tree).new())
 	actor = auto_free(Node2D.new())
 	blackboard = auto_free(load(__blackboard).new())
-	
+
 	tree.actor = actor
 	tree.blackboard = blackboard
 	action = auto_free(load(__action).new())
 	time_limiter = auto_free(load(__source).new())
-	
+
 	time_limiter.add_child(action)
 	tree.add_child(time_limiter)
-	
+
 	runner = scene_runner(tree)
 
 

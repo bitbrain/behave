@@ -17,7 +17,7 @@ func _capture(message: String, data: Array, session_id: int) -> bool:
 	# in case the behavior tree has invalid setup this might be null
 	if debugger_tab == null:
 		return false
-	
+
 	if message == "beehave:register_tree":
 		debugger_tab.register_tree(data[0])
 		return true
@@ -63,7 +63,10 @@ func _on_make_floating() -> void:
 	floating_window = Window.new()
 
 	var panel := Panel.new()
-	panel.add_theme_stylebox_override("panel", editor_interface.get_base_control().get_theme_stylebox("PanelForeground", "EditorStyles"))
+	panel.add_theme_stylebox_override(
+		"panel",
+		editor_interface.get_base_control().get_theme_stylebox("PanelForeground", "EditorStyles")
+	)
 	panel.set_anchors_and_offsets_preset(Control.PRESET_FULL_RECT)
 	floating_window.add_child(panel)
 

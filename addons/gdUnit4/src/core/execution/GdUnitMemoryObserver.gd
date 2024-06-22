@@ -8,18 +8,13 @@ const GdUnitTools = preload("res://addons/gdUnit4/src/core/GdUnitTools.gd")
 
 
 var _store :Array[Variant] = []
-var _orphan_detection_enabled :bool = true
 # enable for debugging purposes
 var _is_stdout_verbose := false
 const _show_debug := false
 
 
-func _init():
-	_orphan_detection_enabled = GdUnitSettings.is_verbose_orphans()
-
-
 ## Registration of an instance to be released when an execution phase is completed
-func register_auto_free(obj) -> Variant:
+func register_auto_free(obj :Variant) -> Variant:
 	if not is_instance_valid(obj):
 		return obj
 	# do not register on GDScriptNativeClass
@@ -61,7 +56,7 @@ static func debug_observe(name :String, obj :Object, indent :int = 0) -> void:
 
 static func guard_instance(obj :Object) -> Object:
 	if not _is_instance_guard_enabled():
-		return 
+		return
 	var tag := TAG_OBSERVE_INSTANCE + str(abs(obj.get_instance_id()))
 	if Engine.has_meta(tag):
 		return
@@ -72,7 +67,7 @@ static func guard_instance(obj :Object) -> Object:
 
 static func unguard_instance(obj :Object, verbose := true) -> void:
 	if not _is_instance_guard_enabled():
-		return 
+		return
 	var tag := TAG_OBSERVE_INSTANCE + str(abs(obj.get_instance_id()))
 	if verbose:
 		debug_observe("unguard instance", obj)
@@ -82,7 +77,7 @@ static func unguard_instance(obj :Object, verbose := true) -> void:
 
 static func gc_guarded_instance(name :String, instance :Object) -> void:
 	if not _is_instance_guard_enabled():
-		return 
+		return
 	await Engine.get_main_loop().process_frame
 	unguard_instance(instance, false)
 	if is_instance_valid(instance) and instance is RefCounted:
@@ -101,10 +96,10 @@ static func gc_guarded_instance(name :String, instance :Object) -> void:
 
 static func gc_on_guarded_instances() -> void:
 	if not _is_instance_guard_enabled():
-		return 
+		return
 	for tag in Engine.get_meta_list():
 		if tag.begins_with(TAG_OBSERVE_INSTANCE):
-			var instance = Engine.get_meta(tag)
+			var instance :Object = Engine.get_meta(tag)
 			await gc_guarded_instance("Leaked instance detected:", instance)
 			await GdUnitTools.free_instance(instance, false)
 
@@ -132,5 +127,5 @@ func gc() -> void:
 
 
 ## Checks whether the specified object is registered for automatic release
-static func is_marked_auto_free(obj) -> bool:
+static func is_marked_auto_free(obj :Object) -> bool:
 	return Engine.get_meta(TAG_AUTO_FREE, []).has(obj)

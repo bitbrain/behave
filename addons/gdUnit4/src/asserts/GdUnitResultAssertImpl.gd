@@ -3,27 +3,28 @@ extends GdUnitResultAssert
 var _base :GdUnitAssert
 
 
-func _init(current):
-	_base = ResourceLoader.load("res://addons/gdUnit4/src/asserts/GdUnitAssertImpl.gd", "GDScript", ResourceLoader.CACHE_MODE_REUSE).new(current)
+func _init(current :Variant) -> void:
+	_base = ResourceLoader.load("res://addons/gdUnit4/src/asserts/GdUnitAssertImpl.gd", "GDScript",
+								ResourceLoader.CACHE_MODE_REUSE).new(current)
 	# save the actual assert instance on the current thread context
 	GdUnitThreadManager.get_current_context().set_assert(self)
-	if not __validate_value_type(current):
+	if not validate_value_type(current):
 		report_error("GdUnitResultAssert inital error, unexpected type <%s>" % GdObjects.typeof_as_string(current))
 
 
-func _notification(event):
+func _notification(event :int) -> void:
 	if event == NOTIFICATION_PREDELETE:
 		if _base != null:
 			_base.notification(event)
 			_base = null
 
 
-func __validate_value_type(value) -> bool:
+func validate_value_type(value :Variant) -> bool:
 	return value == null or value is GdUnitResult
 
 
-func __current() -> GdUnitResult:
-	return _base.__current() as GdUnitResult
+func current_value() -> GdUnitResult:
+	return _base.current_value() as GdUnitResult
 
 
 func report_success() -> GdUnitResultAssert:
@@ -36,7 +37,7 @@ func report_error(error :String) -> GdUnitResultAssert:
 	return self
 
 
-func _failure_message() -> String:
+func failure_message() -> String:
 	return _base._current_error_message
 
 
@@ -49,13 +50,14 @@ func is_null() -> GdUnitResultAssert:
 	_base.is_null()
 	return self
 
+
 func is_not_null() -> GdUnitResultAssert:
 	_base.is_not_null()
 	return self
 
 
 func is_empty() -> GdUnitResultAssert:
-	var result := __current()
+	var result := current_value()
 	if result == null or not result.is_empty():
 		report_error(GdAssertMessages.error_result_is_empty(result))
 	else:
@@ -64,7 +66,7 @@ func is_empty() -> GdUnitResultAssert:
 
 
 func is_success() -> GdUnitResultAssert:
-	var result := __current()
+	var result := current_value()
 	if result == null or not result.is_success():
 		report_error(GdAssertMessages.error_result_is_success(result))
 	else:
@@ -73,7 +75,7 @@ func is_success() -> GdUnitResultAssert:
 
 
 func is_warning() -> GdUnitResultAssert:
-	var result := __current()
+	var result := current_value()
 	if result == null or not result.is_warn():
 		report_error(GdAssertMessages.error_result_is_warning(result))
 	else:
@@ -82,7 +84,7 @@ func is_warning() -> GdUnitResultAssert:
 
 
 func is_error() -> GdUnitResultAssert:
-	var result := __current()
+	var result := current_value()
 	if result == null or not result.is_error():
 		report_error(GdAssertMessages.error_result_is_error(result))
 	else:
@@ -91,7 +93,7 @@ func is_error() -> GdUnitResultAssert:
 
 
 func contains_message(expected :String) -> GdUnitResultAssert:
-	var result := __current()
+	var result := current_value()
 	if result == null:
 		report_error(GdAssertMessages.error_result_has_message("<null>", expected))
 		return self
@@ -106,9 +108,9 @@ func contains_message(expected :String) -> GdUnitResultAssert:
 	return self
 
 
-func is_value(expected) -> GdUnitResultAssert:
-	var result := __current()
-	var value = null if result == null else result.value()
+func is_value(expected :Variant) -> GdUnitResultAssert:
+	var result := current_value()
+	var value :Variant = null if result == null else result.value()
 	if not GdObjects.equals(value, expected):
 		report_error(GdAssertMessages.error_result_is_value(value, expected))
 	else:
@@ -116,5 +118,5 @@ func is_value(expected) -> GdUnitResultAssert:
 	return self
 
 
-func is_equal(expected) -> GdUnitResultAssert:
+func is_equal(expected :Variant) -> GdUnitResultAssert:
 	return is_value(expected)

@@ -21,7 +21,7 @@ func _init(p_name :String,
 	p_return_type :int,
 	p_return_class :String,
 	p_args : Array[GdFunctionArgument],
-	p_varargs :Array[GdFunctionArgument] = []):
+	p_varargs :Array[GdFunctionArgument] = []) -> void:
 	_name = p_name
 	_line_number = p_line_number
 	_return_type = p_return_type
@@ -206,7 +206,7 @@ static func _extract_args(descriptor :Dictionary) -> Array[GdFunctionArgument]:
 		var arg_type := _argument_type(arg)
 		var arg_default :Variant = GdFunctionArgument.UNDEFINED
 		if not defaults.is_empty():
-			var default_value = defaults.pop_back()
+			var default_value :Variant = defaults.pop_back()
 			arg_default = GdDefaultValueDecoder.decode_typed(arg_type, default_value)
 		args_.push_front(GdFunctionArgument.new(arg_name, arg_type, arg_default))
 	return args_

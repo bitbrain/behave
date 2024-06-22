@@ -2,49 +2,51 @@
 extends Window
 
 const EAXAMPLE_URL := "https://github.com/MikeSchulze/gdUnit4-examples/archive/refs/heads/master.zip"
+const GdUnitTools := preload ("res://addons/gdUnit4/src/core/GdUnitTools.gd")
+const GdUnitUpdateClient = preload ("res://addons/gdUnit4/src/update/GdUnitUpdateClient.gd")
 
-const GdUnitTools := preload("res://addons/gdUnit4/src/core/GdUnitTools.gd")
-const GdUnitUpdateClient = preload("res://addons/gdUnit4/src/update/GdUnitUpdateClient.gd")
+@onready var _update_client: GdUnitUpdateClient = $GdUnitUpdateClient
+@onready var _version_label: RichTextLabel = %version
+@onready var _btn_install: Button = %btn_install_examples
+@onready var _progress_bar: ProgressBar = %ProgressBar
+@onready var _progress_text: Label = %progress_lbl
+@onready var _properties_template: Node = $property_template
+@onready var _properties_common: Node = % "common-content"
+@onready var _properties_ui: Node = % "ui-content"
+@onready var _properties_shortcuts: Node = % "shortcut-content"
+@onready var _properties_report: Node = % "report-content"
+@onready var _input_capture: GdUnitInputCapture = %GdUnitInputCapture
+@onready var _property_error: Window = % "propertyError"
 
-@onready var _update_client :GdUnitUpdateClient = $GdUnitUpdateClient
-@onready var _version_label :RichTextLabel = %version
-@onready var _btn_install :Button = %btn_install_examples
-@onready var _progress_bar :ProgressBar = %ProgressBar
-@onready var _progress_text :Label = %progress_lbl
-@onready var _properties_template :Node = $property_template
-@onready var _properties_common :Node = %"common-content"
-@onready var _properties_ui :Node = %"ui-content"
-@onready var _properties_shortcuts :Node = %"shortcut-content"
-@onready var _properties_report :Node = %"report-content"
-@onready var _input_capture :GdUnitInputCapture = %GdUnitInputCapture
-@onready var _property_error :Window = %"propertyError"
-var _font_size :float
+var _font_size: float
 
 
-func _ready():
+func _ready() -> void:
 	# initialize for testing
 	if not Engine.is_editor_hint():
 		GdUnitSettings.setup()
 	GdUnit4Version.init_version_label(_version_label)
 	_font_size = GdUnitFonts.init_fonts(_version_label)
+	about_to_popup.connect(_do_setup_properties)
+
+
+# do setup the dialog with given settings
+func _do_setup_properties() -> void:
 	setup_properties(_properties_common, GdUnitSettings.COMMON_SETTINGS)
 	setup_properties(_properties_ui, GdUnitSettings.UI_SETTINGS)
 	setup_properties(_properties_report, GdUnitSettings.REPORT_SETTINGS)
 	setup_properties(_properties_shortcuts, GdUnitSettings.SHORTCUT_SETTINGS)
-	await get_tree().process_frame
-	if not Engine.is_editor_hint():
-		DisplayServer.window_set_mode(DisplayServer.WINDOW_MODE_WINDOWED)
-		DisplayServer.window_set_size(Vector2i(1600, 800))
-		popup_centered_ratio(1)
-	else:
-		popup_centered_ratio(.75)
 
 
-func _sort_by_key(left :GdUnitProperty, right :GdUnitProperty) -> bool:
+func _sort_by_key(left: GdUnitProperty, right: GdUnitProperty) -> bool:
 	return left.name() < right.name()
 
 
-func setup_properties(properties_parent :Node, property_category) -> void:
+func setup_properties(properties_parent: Node, property_category: String) -> void:
+	# Do remove first potential previous added properties (could be happened when the dlg is opened at twice)
+	for child in properties_parent.get_children():
+		properties_parent.remove_child(child)
+
 	var category_properties := GdUnitSettings.list_settings(property_category)
 	# sort by key
 	category_properties.sort_custom(_sort_by_key)
@@ -57,36 +59,36 @@ func setup_properties(properties_parent :Node, property_category) -> void:
 		var grid := GridContainer.new()
 		grid.columns = 4
 		grid.theme = theme_
-		var property : GdUnitProperty = p
-		var current_category = property.category()
+		var property: GdUnitProperty = p
+		var current_category := property.category()
 		if current_category != last_category:
-			var sub_category :Node = _properties_template.get_child(3).duplicate()
+			var sub_category: Node = _properties_template.get_child(3).duplicate()
 			sub_category.get_child(0).text = current_category.capitalize()
 			sub_category.custom_minimum_size.y = _font_size + 16
 			properties_parent.add_child(sub_category)
 			last_category = current_category
 		# property name
-		var label :Label = _properties_template.get_child(0).duplicate()
+		var label: Label = _properties_template.get_child(0).duplicate()
 		label.text = _to_human_readable(property.name())
 		label.custom_minimum_size = Vector2(_font_size * 20, 0)
 		grid.add_child(label)
 		min_size_ += label.size.x
 
 		# property reset btn
-		var reset_btn :Button = _properties_template.get_child(1).duplicate()
+		var reset_btn: Button = _properties_template.get_child(1).duplicate()
 		reset_btn.icon = _get_btn_icon("Reload")
 		reset_btn.disabled = property.value() == property.default()
 		grid.add_child(reset_btn)
 		min_size_ += reset_btn.size.x
 
 		# property type specific input element
-		var input :Node = _create_input_element(property, reset_btn)
+		var input: Node = _create_input_element(property, reset_btn)
 		input.custom_minimum_size = Vector2(_font_size * 15, 0)
 		grid.add_child(input)
-		min_size_ +=  input.size.x
+		min_size_ += input.size.x
 		reset_btn.pressed.connect(_on_btn_property_reset_pressed.bind(property, input, reset_btn))
 		# property help text
-		var info :Node = _properties_template.get_child(2).duplicate()
+		var info: Node = _properties_template.get_child(2).duplicate()
 		info.text = property.help()
 		grid.add_child(info)
 		min_size_ += info.text.length() * _font_size
@@ -96,12 +98,11 @@ func setup_properties(properties_parent :Node, property_category) -> void:
 	properties_parent.custom_minimum_size.x = min_size_overall
 
 
-func _create_input_element(property: GdUnitProperty, reset_btn :Button) -> Node:
+func _create_input_element(property: GdUnitProperty, reset_btn: Button) -> Node:
 	if property.is_selectable_value():
 		var options := OptionButton.new()
 		options.alignment = HORIZONTAL_ALIGNMENT_CENTER
-		var values_set := Array(property.value_set())
-		for value in values_set:
+		for value in property.value_set():
 			options.add_item(value)
 		options.item_selected.connect(_on_option_selected.bind(property, reset_btn))
 		options.select(property.value())
@@ -127,7 +128,7 @@ func _create_input_element(property: GdUnitProperty, reset_btn :Button) -> Node:
 	return Control.new()
 
 
-func to_shortcut(keys :PackedInt32Array) -> String:
+func to_shortcut(keys: PackedInt32Array) -> String:
 	var input_event := InputEventKey.new()
 	for key in keys:
 		match key:
@@ -140,7 +141,7 @@ func to_shortcut(keys :PackedInt32Array) -> String:
 	return input_event.as_text()
 
 
-func to_keys(input_event :InputEventKey) -> PackedInt32Array:
+func to_keys(input_event: InputEventKey) -> PackedInt32Array:
 	var keys := PackedInt32Array()
 	if input_event.ctrl_pressed:
 		keys.append(KEY_CTRL)
@@ -154,29 +155,25 @@ func to_keys(input_event :InputEventKey) -> PackedInt32Array:
 	return keys
 
 
-func _to_human_readable(value :String) -> String:
+func _to_human_readable(value: String) -> String:
 	return value.split("/")[-1].capitalize()
 
 
-func _get_btn_icon(p_name :String) -> Texture2D:
+func _get_btn_icon(p_name: String) -> Texture2D:
 	if not Engine.is_editor_hint():
 		var placeholder := PlaceholderTexture2D.new()
-		placeholder.size = Vector2(8,8)
+		placeholder.size = Vector2(8, 8)
 		return placeholder
-	var editor :EditorPlugin = Engine.get_meta("GdUnitEditorPlugin")
-	if editor:
-		var editior_control := editor.get_editor_interface().get_base_control()
-		return GodotVersionFixures.get_icon(editior_control, p_name)
-	return null
+	return GdUnitUiTools.get_icon(p_name)
 
 
 func _install_examples() -> void:
 	_init_progress(5)
 	update_progress("Downloading examples")
 	await get_tree().process_frame
-	var tmp_path := GdUnitTools.create_temp_dir("download")
+	var tmp_path := GdUnitFileAccess.create_temp_dir("download")
 	var zip_file := tmp_path + "/examples.zip"
-	var response :GdUnitUpdateClient.HttpResponse = await _update_client.request_zip_package(EAXAMPLE_URL, zip_file)
+	var response: GdUnitUpdateClient.HttpResponse = await _update_client.request_zip_package(EAXAMPLE_URL, zip_file)
 	if response.code() != 200:
 		push_warning("Examples cannot be retrieved from GitHub! \n Error code: %d : %s" % [response.code(), response.response()])
 		update_progress("Install examples failed! Try it later again.")
@@ -185,7 +182,7 @@ func _install_examples() -> void:
 		return
 	# extract zip to tmp
 	update_progress("Install examples into project")
-	var result := GdUnitTools.extract_zip(zip_file, "res://gdUnit4-examples/")
+	var result := GdUnitFileAccess.extract_zip(zip_file, "res://gdUnit4-examples/")
 	if result.is_error():
 		update_progress("Install examples failed! %s" % result.error_message())
 		await get_tree().create_timer(3).timeout
@@ -198,36 +195,35 @@ func _install_examples() -> void:
 	stop_progress()
 
 
-func rescan(update_scripts :bool = false) -> void:
+func rescan(update_scripts:=false) -> void:
 	await get_tree().idle_frame
-	var plugin :EditorPlugin = Engine.get_meta("GdUnitEditorPlugin")
-	var fs := plugin.get_editor_interface().get_resource_filesystem()
+	var fs := EditorInterface.get_resource_filesystem()
 	fs.scan_sources()
 	while fs.is_scanning():
 		await get_tree().create_timer(1).timeout
 	if update_scripts:
-		plugin.get_editor_interface().get_resource_filesystem().update_script_classes()
+		EditorInterface.get_resource_filesystem().update_script_classes()
 
 
-func _on_btn_report_bug_pressed():
-	OS.shell_open("https://github.com/MikeSchulze/gdUnit4/issues/new?assignees=MikeSchulze&labels=bug&template=bug_report.md&title=")
+func _on_btn_report_bug_pressed() -> void:
+	OS.shell_open("https://github.com/MikeSchulze/gdUnit4/issues/new?assignees=MikeSchulze&labels=bug&projects=projects%2F5&template=bug_report.yml&title=GD-XXX%3A+Describe+the+issue+briefly")
 
 
-func _on_btn_request_feature_pressed():
-	OS.shell_open("https://github.com/MikeSchulze/gdUnit4/issues/new?assignees=MikeSchulze&labels=enhancement&template=feature_request.md&title=")
+func _on_btn_request_feature_pressed() -> void:
+	OS.shell_open("https://github.com/MikeSchulze/gdUnit4/issues/new?assignees=MikeSchulze&labels=enhancement&projects=&template=feature_request.md&title=")
 
 
-func _on_btn_install_examples_pressed():
+func _on_btn_install_examples_pressed() -> void:
 	_btn_install.disabled = true
 	await _install_examples()
 	_btn_install.disabled = false
 
 
-func _on_btn_close_pressed():
+func _on_btn_close_pressed() -> void:
 	hide()
 
 
-func _on_btn_property_reset_pressed(property: GdUnitProperty, input :Node, reset_btn :Button):
+func _on_btn_property_reset_pressed(property: GdUnitProperty, input: Node, reset_btn: Button) -> void:
 	if input is CheckButton:
 		input.button_pressed = property.default()
 	elif input is LineEdit:
@@ -242,12 +238,12 @@ func _on_btn_property_reset_pressed(property: GdUnitProperty, input :Node, reset
 		_on_property_text_changed(property.default(), property, reset_btn)
 
 
-func _on_property_text_changed(new_value :Variant, property: GdUnitProperty, reset_btn :Button):
+func _on_property_text_changed(new_value: Variant, property: GdUnitProperty, reset_btn: Button) -> void:
 	property.set_value(new_value)
 	reset_btn.disabled = property.value() == property.default()
-	var error :Variant = GdUnitSettings.update_property(property)
+	var error: Variant = GdUnitSettings.update_property(property)
 	if error:
-		var label :Label = _property_error.get_child(0) as Label
+		var label: Label = _property_error.get_child(0) as Label
 		label.set_text(error)
 		var control := gui_get_focus_owner()
 		_property_error.show()
@@ -255,25 +251,25 @@ func _on_property_text_changed(new_value :Variant, property: GdUnitProperty, res
 			_property_error.position = control.global_position + Vector2(self.position) + Vector2(40, 40)
 
 
-func _on_option_selected(index :int, property: GdUnitProperty, reset_btn :Button):
+func _on_option_selected(index: int, property: GdUnitProperty, reset_btn: Button) -> void:
 	property.set_value(index)
 	reset_btn.disabled = property.value() == property.default()
 	GdUnitSettings.update_property(property)
 
 
-func _on_shortcut_change(input_button :Button, property: GdUnitProperty, reset_btn :Button) -> void:
+func _on_shortcut_change(input_button: Button, property: GdUnitProperty, reset_btn: Button) -> void:
 	_input_capture.set_custom_minimum_size(_properties_shortcuts.get_size())
 	_input_capture.visible = true
 	_input_capture.show()
 	set_process_input(false)
 	_input_capture.reset()
-	var input_event :InputEventKey = await _input_capture.input_completed
+	var input_event: InputEventKey = await _input_capture.input_completed
 	input_button.text = input_event.as_text()
 	_on_property_text_changed(to_keys(input_event), property, reset_btn)
 	set_process_input(true)
 
 
-func _init_progress(max_value : int) -> void:
+func _init_progress(max_value: int) -> void:
 	_progress_bar.visible = true
 	_progress_bar.max_value = max_value
 	_progress_bar.value = 0
@@ -287,6 +283,6 @@ func stop_progress() -> void:
 	_progress_bar.visible = false
 
 
-func update_progress(message :String) -> void:
+func update_progress(message: String) -> void:
 	_progress_text.text = message
 	_progress_bar.value += 1

@@ -15,13 +15,13 @@ func before_run(actor: Node, blackboard: Blackboard):
 
 func tick(actor: Node, blackboard: Blackboard) -> int:
 	var child = get_child(0)
-	
+
 	if current_count < repetitions:
 		if running_child == null:
 			child.before_run(actor, blackboard)
 
 		var response = child.tick(actor, blackboard)
-		
+
 		if can_send_message(blackboard):
 			BeehaveDebuggerMessages.process_tick(child.get_instance_id(), response)
 
@@ -40,13 +40,13 @@ func tick(actor: Node, blackboard: Blackboard) -> int:
 
 		if running_child != null:
 			running_child = null
-		
+
 		if response == FAILURE:
 			return FAILURE
-		
+
 		if current_count >= repetitions:
 			return SUCCESS
-		
+
 		return RUNNING
 	else:
 		return SUCCESS

@@ -26,11 +26,11 @@ func before_test() -> void:
 	action2 = auto_free(load(__count_up_action).new())
 	actor = auto_free(Node2D.new())
 	blackboard = auto_free(load(__blackboard).new())
-	
+
 	tree.add_child(selector)
 	selector.add_child(action1)
 	selector.add_child(action2)
-	
+
 	tree.actor = actor
 	tree.blackboard = blackboard
 
@@ -64,7 +64,7 @@ func test_not_interrupt_second_when_first_is_succeeding() -> void:
 	assert_that(selector.tick(actor, blackboard)).is_equal(BeehaveNode.RUNNING)
 	assert_that(action1.count).is_equal(1)
 	assert_that(action2.count).is_equal(1)
-	
+
 	action1.status = BeehaveNode.SUCCESS
 	assert_that(selector.tick(actor, blackboard)).is_equal(BeehaveNode.RUNNING)
 	assert_that(action1.count).is_equal(1)
@@ -77,7 +77,7 @@ func test_not_interrupt_second_when_first_is_running() -> void:
 	assert_that(selector.tick(actor, blackboard)).is_equal(BeehaveNode.RUNNING)
 	assert_that(action1.count).is_equal(1)
 	assert_that(action2.count).is_equal(1)
-	
+
 	action1.status = BeehaveNode.RUNNING
 	assert_that(selector.tick(actor, blackboard)).is_equal(BeehaveNode.RUNNING)
 	assert_that(action1.count).is_equal(1)
@@ -115,37 +115,37 @@ func test_not_interrupt_first_after_finished() -> void:
 	assert_that(action1.count).is_equal(1)
 	assert_that(action2.count).is_equal(0)
 	assert_that(action3.count).is_equal(0)
-	
+
 	action1.status = BeehaveNode.FAILURE
 	assert_that(selector.tick(actor, blackboard)).is_equal(BeehaveNode.RUNNING)
 	assert_that(action1.count).is_equal(2)
 	assert_that(action2.count).is_equal(1)
 	assert_that(action3.count).is_equal(1)
-	
+
 	selector.remove_child(action3)
 
 
 func test_interrupt_when_nested() -> void:
 	var selector_reactive = auto_free(load(__selector_reactive).new())
 	var fake_condition = auto_free(load(__count_up_action).new())
-	
+
 	tree.remove_child(selector)
 	tree.add_child(selector_reactive)
 	selector_reactive.add_child(fake_condition)
 	selector_reactive.add_child(selector)
-	
+
 	fake_condition.status = BeehaveNode.FAILURE
 	action1.status = BeehaveNode.RUNNING
-	
+
 	assert_that(tree.tick()).is_equal(BeehaveNode.RUNNING)
 	assert_that(action1.count).is_equal(1)
 	assert_that(action2.count).is_equal(0)
-	
+
 	fake_condition.status = BeehaveNode.SUCCESS
 	assert_that(tree.tick()).is_equal(BeehaveNode.SUCCESS)
 	assert_that(action1.count).is_equal(0)
 	assert_that(action2.count).is_equal(0)
-	
+
 	# clean up...
 	selector_reactive.remove_child(selector)
 	tree.remove_child(selector_reactive)

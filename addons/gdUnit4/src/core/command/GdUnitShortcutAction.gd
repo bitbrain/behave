@@ -2,7 +2,7 @@ class_name GdUnitShortcutAction
 extends RefCounted
 
 
-func _init(p_type :GdUnitShortcut.ShortCut, p_shortcut :Shortcut, p_command :String):
+func _init(p_type :GdUnitShortcut.ShortCut, p_shortcut :Shortcut, p_command :String) -> void:
 	assert(p_type != null, "missing parameter 'type'")
 	assert(p_shortcut != null, "missing parameter 'shortcut'")
 	assert(p_command != null, "missing parameter 'command'")

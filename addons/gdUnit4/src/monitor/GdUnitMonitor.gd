@@ -5,7 +5,7 @@ extends RefCounted
 var _id :String
 
 # constructs new Monitor with given id
-func _init(p_id :String):
+func _init(p_id :String) -> void:
 	_id = p_id
 
 
@@ -15,10 +15,10 @@ func id() -> String:
 
 
 # starts monitoring
-func start():
+func start() -> void:
 	pass
 
 
 # stops monitoring
-func stop():
+func stop() -> void:
 	pass

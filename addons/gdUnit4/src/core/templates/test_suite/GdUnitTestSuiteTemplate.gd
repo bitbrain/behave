@@ -12,22 +12,22 @@ const SUPPORTED_TAGS_GD = """
 	# is used to build the test suite class name
 		class_name ${suite_class_name}
 		extends GdUnitTestSuite
-	
-	
+
+
 	# The class name in pascal case, formed from the source script.
 	${source_class}
 		# can be used to create the class e.g. for source 'MyClass'
 		var my_test_class := ${source_class}.new()
 		# will be result in
 		var my_test_class := MyClass.new()
-	
+
 	# The class as variable name in snake case, formed from the source script.
 	${source_var}
 		# Can be used to build the variable name e.g. for source 'MyClass'
 		var ${source_var} := ${source_class}.new()
 		# will be result in
 		var my_class := MyClass.new()
-	
+
 	# The full resource path from which the file was created.
 	${source_resource_path}
 		# Can be used to load the script in your test
@@ -36,34 +36,33 @@ const SUPPORTED_TAGS_GD = """
 		var my_script := load("res://folder/my_class.gd")
 """
 
-
 const SUPPORTED_TAGS_CS = """
 	C# Tags are replaced when the test-suite is created.
 
 	// The namespace name of the test-suite
 	${name_space}
 		namespace ${name_space}
-	
+
 	// The class name of the test-suite, formed from the source class.
 	${suite_class_name}
 		// is used to build the test suite class name
 		[TestSuite]
 		public class ${suite_class_name}
-	
+
 	// The class name formed from the source class.
 	${source_class}
 		// can be used to create the class e.g. for source 'MyClass'
 		private string myTestClass = new ${source_class}();
 		// will be result in
 		private string myTestClass = new MyClass();
-	
+
 	// The class as variable name in camelCase, formed from the source class.
 	${source_var}
 		// Can be used to build the variable name e.g. for source 'MyClass'
 		private object ${source_var} = new ${source_class}();
 		// will be result in
 		private object myClass = new MyClass();
-	
+
 	// The full resource path from which the file was created.
 	${source_resource_path}
 		// Can be used to load the script in your test

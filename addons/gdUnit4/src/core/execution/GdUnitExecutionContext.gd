@@ -12,6 +12,15 @@ var _test_case_name: StringName
 var _name :String
 
 
+var error_monitor : GodotGdErrorMonitor = null:
+	set (value):
+		error_monitor = value
+	get:
+		if _parent_context != null:
+			return _parent_context.error_monitor
+		return error_monitor
+
+
 var test_suite : GdUnitTestSuite = null:
 	set (value):
 		test_suite = value
@@ -35,6 +44,7 @@ func _init(name :String, parent_context :GdUnitExecutionContext = null) -> void:
 	_orphan_monitor = GdUnitOrphanNodesMonitor.new(name)
 	_orphan_monitor.start()
 	_memory_observer = GdUnitMemoryObserver.new()
+	error_monitor = GodotGdErrorMonitor.new()
 	_report_collector = GdUnitTestReportCollector.new(get_instance_id())
 	if parent_context != null:
 		parent_context._sub_context.append(self)
@@ -84,6 +94,17 @@ func test_failed() -> bool:
 	return has_failures() or has_errors()
 
 
+func error_monitor_start() -> void:
+	error_monitor.start()
+
+
+func error_monitor_stop() -> void:
+	await error_monitor.scan()
+	for error_report in error_monitor.to_reports():
+		if error_report.is_error():
+			_report_collector._reports.append(error_report)
+
+
 func orphan_monitor_start() -> void:
 	_orphan_monitor.start()
 
@@ -111,43 +132,47 @@ func build_report_statistics(orphans :int, recursive := true) -> Dictionary:
 
 
 func has_failures() -> bool:
-	return _sub_context.any(func(c): return c.has_failures()) or _report_collector.has_failures()
+	return _sub_context.any(func(c :GdUnitExecutionContext) -> bool:
+			return c.has_failures()) or _report_collector.has_failures()
 
 
 func has_errors() -> bool:
-	return _sub_context.any(func(c): return c.has_errors()) or _report_collector.has_errors()
+	return _sub_context.any(func(c :GdUnitExecutionContext) -> bool:
+			return c.has_errors()) or _report_collector.has_errors()
 
 
 func has_warnings() -> bool:
-	return _sub_context.any(func(c): return c.has_warnings()) or _report_collector.has_warnings()
+	return _sub_context.any(func(c :GdUnitExecutionContext) -> bool:
+			return c.has_warnings()) or _report_collector.has_warnings()
 
 
 func has_skipped() -> bool:
-	return _sub_context.any(func(c): return c.has_skipped()) or _report_collector.has_skipped()
+	return _sub_context.any(func(c :GdUnitExecutionContext) -> bool:
+			return c.has_skipped()) or _report_collector.has_skipped()
 
 
 func count_failures(recursive :bool) -> int:
 	if not recursive:
 		return _report_collector.count_failures()
 	return _sub_context\
-		.map(func(c): return c.count_failures(recursive))\
-		.reduce(sum, _report_collector.count_failures()) 
+		.map(func(c :GdUnitExecutionContext) -> int:
+				return c.count_failures(recursive)).reduce(sum, _report_collector.count_failures())
 
 
 func count_errors(recursive :bool) -> int:
 	if not recursive:
 		return _report_collector.count_errors()
 	return _sub_context\
-		.map(func(c): return c.count_errors(recursive))\
-		.reduce(sum, _report_collector.count_errors()) 
+		.map(func(c :GdUnitExecutionContext) -> int:
+				return c.count_errors(recursive)).reduce(sum, _report_collector.count_errors())
 
 
 func count_skipped(recursive :bool) -> int:
 	if not recursive:
 		return _report_collector.count_skipped()
 	return _sub_context\
-		.map(func(c): return c.count_skipped(recursive))\
-		.reduce(sum, _report_collector.count_skipped()) 
+		.map(func(c :GdUnitExecutionContext) -> int:
+				return c.count_skipped(recursive)).reduce(sum, _report_collector.count_skipped())
 
 
 func count_orphans() -> int:

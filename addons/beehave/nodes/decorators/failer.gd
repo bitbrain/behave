@@ -4,6 +4,7 @@ class_name AlwaysFailDecorator extends Decorator
 
 ## A Failer node will always return a `FAILURE` status code.
 
+
 func tick(actor: Node, blackboard: Blackboard) -> int:
 	var c = get_child(0)
 

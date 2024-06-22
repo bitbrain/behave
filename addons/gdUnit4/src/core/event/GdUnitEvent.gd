@@ -18,6 +18,11 @@ enum {
 	TESTSUITE_AFTER,
 	TESTCASE_BEFORE,
 	TESTCASE_AFTER,
+	DISCOVER_START,
+	DISCOVER_END,
+	DISCOVER_SUITE_ADDED,
+	DISCOVER_TEST_ADDED,
+	DISCOVER_TEST_REMOVED,
 }
 
 var _event_type :int
@@ -26,10 +31,10 @@ var _suite_name :String
 var _test_name :String
 var _total_count :int = 0
 var _statistics := Dictionary()
-var _reports := Array()
+var _reports :Array[GdUnitReport] = []
 
 
-func suite_before(p_resource_path :String, p_suite_name :String, p_total_count) -> GdUnitEvent:
+func suite_before(p_resource_path :String, p_suite_name :String, p_total_count :int) -> GdUnitEvent:
 	_event_type = TESTSUITE_BEFORE
 	_resource_path = p_resource_path
 	_suite_name = p_suite_name
@@ -38,7 +43,7 @@ func suite_before(p_resource_path :String, p_suite_name :String, p_total_count) 
 	return self
 
 
-func suite_after(p_resource_path :String, p_suite_name :String, p_statistics :Dictionary = {}, p_reports :Array = []) -> GdUnitEvent:
+func suite_after(p_resource_path :String, p_suite_name :String, p_statistics :Dictionary = {}, p_reports :Array[GdUnitReport] = []) -> GdUnitEvent:
 	_event_type = TESTSUITE_AFTER
 	_resource_path = p_resource_path
 	_suite_name  = p_suite_name
@@ -56,7 +61,7 @@ func test_before(p_resource_path :String, p_suite_name :String, p_test_name :Str
 	return self
 
 
-func test_after(p_resource_path :String, p_suite_name :String, p_test_name :String, p_statistics :Dictionary = {}, p_reports :Array = []) -> GdUnitEvent:
+func test_after(p_resource_path :String, p_suite_name :String, p_test_name :String, p_statistics :Dictionary = {}, p_reports :Array[GdUnitReport] = []) -> GdUnitEvent:
 	_event_type = TESTCASE_AFTER
 	_resource_path = p_resource_path
 	_suite_name  = p_suite_name
@@ -134,11 +139,11 @@ func is_skipped() -> bool:
 	return _statistics.get(SKIPPED, false)
 
 
-func reports() -> Array:
+func reports() -> Array[GdUnitReport]:
 	return _reports
 
 
-func _to_string():
+func _to_string() -> String:
 	return "Event: %s %s:%s, %s, %s" % [_event_type, _suite_name, _test_name, _statistics, _reports]
 
 
@@ -161,20 +166,24 @@ func deserialize(serialized :Dictionary) -> GdUnitEvent:
 	_suite_name    = serialized.get("suite_name", null)
 	_test_name     = serialized.get("test_name", "unknown")
 	_total_count   = serialized.get("total_count", 0)
-	_statistics     = serialized.get("statistics", Dictionary())
-	_reports       = _deserialize_reports(serialized.get("reports",[]))
+	_statistics    = serialized.get("statistics", Dictionary())
+	if serialized.has("reports"):
+		# needs this workaround to copy typed values in the array
+		var reports_to_deserializ :Array[Dictionary] = []
+		reports_to_deserializ.append_array(serialized.get("reports"))
+		_reports = _deserialize_reports(reports_to_deserializ)
 	return self
 
 
-func _serialize_TestReports() -> Array:
-	var serialized_reports := Array()
+func _serialize_TestReports() -> Array[Dictionary]:
+	var serialized_reports :Array[Dictionary] = []
 	for report in _reports:
 		serialized_reports.append(report.serialize())
 	return serialized_reports
 
 
-func _deserialize_reports(p_reports :Array) -> Array:
-	var deserialized_reports := Array()
+func _deserialize_reports(p_reports :Array[Dictionary]) -> Array[GdUnitReport]:
+	var deserialized_reports :Array[GdUnitReport] = []
 	for report in p_reports:
 		var test_report := GdUnitReport.new().deserialize(report)
 		deserialized_reports.append(test_report)

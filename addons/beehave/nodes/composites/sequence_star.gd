@@ -50,7 +50,7 @@ func interrupt(actor: Node, blackboard: Blackboard) -> void:
 	_reset()
 	super(actor, blackboard)
 
-	
+
 func _reset() -> void:
 	successful_index = 0
 
