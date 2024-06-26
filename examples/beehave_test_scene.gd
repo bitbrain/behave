@@ -1,10 +1,10 @@
 extends Node2D
 
 @onready var sprite := $ColorChangingSprite
+@onready var another_sprite := $AnotherSprite
 @onready var tree := %BeehaveTree
 @onready var condition_label := %ConditionLabel
 @onready var action_label := %ActionLabel
-
 
 func _process(delta:float) -> void:
 	if Input.is_action_pressed("ui_left"):
@@ -28,3 +28,17 @@ func _process(delta:float) -> void:
 		action_label.text = str(tree.get_running_action(), " -> RUNNING")
 	else:
 		action_label.text = "no running action"
+
+	# The following are used to verify if the beehave trees show up or get
+	# removed from the debug panel when various scene operations occur.
+	if Input.is_action_just_pressed("ui_text_delete") and another_sprite.is_inside_tree():
+		another_sprite.get_parent().remove_child(another_sprite)
+
+	if Input.is_action_just_pressed("ui_accept") and not another_sprite.is_inside_tree():
+		add_child(another_sprite)
+
+	if Input.is_action_just_pressed("ui_undo"):
+		get_tree().reload_current_scene()
+
+	if Input.is_action_just_pressed("ui_cut"):
+		another_sprite.reparent(get_node("Background"))
