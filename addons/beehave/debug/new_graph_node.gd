@@ -62,14 +62,17 @@ func _ready() -> void:
 	icon_rect.stretch_mode = TextureRect.STRETCH_KEEP_ASPECT_CENTERED
 
 	titlebar_hbox = get_titlebar_hbox()
-	titlebar_hbox.remove_child(titlebar_hbox.get_child(0))
+	titlebar_hbox.get_child(0).queue_free()
 	titlebar_hbox.alignment = BoxContainer.ALIGNMENT_BEGIN
 	titlebar_hbox.add_child(icon_rect)
 
 	title_label = Label.new()
 	title_label.add_theme_color_override("font_color", Color.WHITE)
-	var title_font: FontVariation = get_theme_font("title_font").duplicate()
-	title_font.variation_embolden = 1
+	var title_font: Font = get_theme_font("title_font").duplicate()
+	if title_font is FontVariation:
+		title_font.variation_embolden = 1
+	elif title_font is FontFile:
+		title_font.font_weight = 700
 	title_label.add_theme_font_override("font", title_font)
 	title_label.vertical_alignment = VERTICAL_ALIGNMENT_CENTER
 	title_label.size_flags_horizontal = Control.SIZE_EXPAND_FILL
