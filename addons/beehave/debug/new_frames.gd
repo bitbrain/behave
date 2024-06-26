@@ -27,7 +27,13 @@ func _init() -> void:
 		return
 	
 	
-	titlebar_normal = plugin.get_editor_interface().get_base_control().get_theme_stylebox(&"titlebar", &"GraphNode").duplicate()
+	titlebar_normal = (
+		plugin
+		.get_editor_interface()
+		.get_base_control()
+		.get_theme_stylebox(&"titlebar", &"GraphNode")\
+		.duplicate()
+	)
 	titlebar_success = titlebar_normal.duplicate()
 	titlebar_failure = titlebar_normal.duplicate()
 	titlebar_running = titlebar_normal.duplicate()
@@ -41,8 +47,20 @@ func _init() -> void:
 	titlebar_running.border_color = RUNNING_COLOR
 	
 	
-	panel_normal = plugin.get_editor_interface().get_base_control().get_theme_stylebox(&"panel", &"GraphNode").duplicate()
-	panel_success = plugin.get_editor_interface().get_base_control().get_theme_stylebox(&"panel_selected", &"GraphNode").duplicate()
+	panel_normal = (
+		plugin
+		.get_editor_interface()
+		.get_base_control()
+		.get_theme_stylebox(&"panel", &"GraphNode")
+		.duplicate()
+	)
+	panel_success = (
+		plugin
+		.get_editor_interface()
+		.get_base_control()
+		.get_theme_stylebox(&"panel_selected", &"GraphNode")
+		.duplicate()
+	)
 	panel_failure = panel_success.duplicate()
 	panel_running = panel_success.duplicate()
 	

@@ -4,9 +4,6 @@ extends GraphNode
 
 const BeehaveUtils := preload("res://addons/beehave/utils/utils.gd")
 
-
-const DEFAULT_COLOR := Color("#dad4cb")
-
 const PORT_TOP_ICON := preload("icons/port_top.svg")
 const PORT_BOTTOM_ICON := preload("icons/port_bottom.svg")
 const PORT_LEFT_ICON := preload("icons/port_left.svg")
@@ -36,10 +33,8 @@ var layout_size: float:
 		return size.y if horizontal else size.x
 
 
-var panel: PanelContainer
 var icon_rect: TextureRect
 var title_label: Label
-var container: VBoxContainer
 var label: Label
 var titlebar_hbox: HBoxContainer
 
@@ -66,6 +61,11 @@ func _ready() -> void:
 	icon_rect = TextureRect.new()
 	icon_rect.stretch_mode = TextureRect.STRETCH_KEEP_ASPECT_CENTERED
 
+	titlebar_hbox = get_titlebar_hbox()
+	titlebar_hbox.remove_child(titlebar_hbox.get_child(0))
+	titlebar_hbox.alignment = BoxContainer.ALIGNMENT_BEGIN
+	titlebar_hbox.add_child(icon_rect)
+
 	title_label = Label.new()
 	title_label.add_theme_color_override("font_color", Color.WHITE)
 	var title_font: FontVariation = get_theme_font("title_font").duplicate()
@@ -74,6 +74,7 @@ func _ready() -> void:
 	title_label.vertical_alignment = VERTICAL_ALIGNMENT_CENTER
 	title_label.size_flags_horizontal = Control.SIZE_EXPAND_FILL
 	title_label.text = title_text
+	titlebar_hbox.add_child(title_label)
 
 	label = Label.new()
 	label.text = " " if text.is_empty() else text
@@ -81,12 +82,6 @@ func _ready() -> void:
 
 	# For bottom port
 	add_child(Control.new())
-	
-	titlebar_hbox = get_titlebar_hbox()
-	titlebar_hbox.remove_child(titlebar_hbox.get_child(0))
-	titlebar_hbox.alignment = BoxContainer.ALIGNMENT_BEGIN
-	titlebar_hbox.add_child(icon_rect)
-	titlebar_hbox.add_child(title_label)
 
 	minimum_size_changed.connect(_on_size_changed)
 	_on_size_changed.call_deferred()
@@ -154,4 +149,4 @@ func _set_stylebox_overrides(panel_stylebox: StyleBox, titlebar_stylebox: StyleB
 
 
 func _on_size_changed():
-	add_theme_constant_override("port_offset", 12 * BeehaveUtils.get_editor_scale() if horizontal else round(size.x / 1.0))
+	add_theme_constant_override("port_offset", 12 * BeehaveUtils.get_editor_scale() if horizontal else round(size.x))
