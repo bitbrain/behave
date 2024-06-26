@@ -15,7 +15,10 @@ func _init():
 
 func _enter_tree() -> void:
 	editor_debugger = BeehaveEditorDebugger.new()
-	frames = preload("debug/frames.gd").new()
+	if Engine.get_version_info().minor >= 2:
+		frames = preload("debug/new_frames.gd").new()
+	else:
+		frames = preload("debug/old_frames.gd").new()
 	add_debugger_plugin(editor_debugger)
 
 
