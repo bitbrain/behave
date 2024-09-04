@@ -29,6 +29,83 @@ Imagine an enemy character that should decide between different actions based on
 
 The enemy will choose the first successful option, and the Selector node will return `SUCCESS`. If none of the conditions are met, the Selector node will return `FAILURE`.
 
+<ul style="list-style: none;">
+    <li>
+        <img src="assets/icons/tree.svg" width="18px"/>
+        BeehaveTree
+    </li>
+    <ul style="list-style: none;">
+        <li>
+            <a href="#/manual/selector"><img src="assets/icons/selector.svg" width="18px"/></a>
+            SelectorComposite
+        </li>
+        <li>
+            <ul style="list-style: none;">
+                <li>
+                    <a href="#/manual/sequence"><img src="assets/icons/sequence.svg" width="18px"/></a>
+                    SequenceComposite
+                </li>
+                <li>
+                    <ul style="list-style: none;">
+                        <li>
+                            <a href="#/manual/condition_leaf"><img src="assets/icons/condition.svg" width="18px"/></a>
+                            IsPlayerFarAway
+                        </li>
+                        <li>
+                            <a href="#/manual/action_leaf"><img src="assets/icons/action.svg" width="18px"/></a>
+                            PatrolTheArea
+                        </li>
+                    </ul>
+                </li>
+            </ul>
+        </li>
+        <li>
+            <ul style="list-style: none;">
+                <li>
+                    <a href="#/manual/sequence"><img src="assets/icons/sequence.svg" width="18px"/></a>
+                    SequenceComposite2
+                </li>
+                <li>
+                    <ul style="list-style: none;">
+                        <li>
+                            <a href="#/manual/condition_leaf"><img src="assets/icons/condition.svg" width="18px"/></a>
+                            IsPlayerClose
+                        </li>
+                        <li>
+                            <a href="#/manual/action_leaf"><img src="assets/icons/action.svg" width="18px"/></a>
+                            AttackPlayer
+                        </li>
+                    </ul>
+                </li>
+            </ul>
+        </li>
+        <li>
+            <ul style="list-style: none;">
+                <li>
+                    <a href="#/manual/sequence"><img src="assets/icons/sequence.svg" width="18px"/></a>
+                    SequenceComposite3
+                </li>
+                <li>
+                    <ul style="list-style: none;">
+                        <li>
+                            <a href="#/manual/condition_leaf"><img src="assets/icons/condition.svg" width="18px"/></a>
+                            IsPlayerClose
+                        </li>
+                        <li>
+                            <a href="#/manual/condition_leaf"><img src="assets/icons/condition.svg" width="18px"/></a>
+                            IsHPLow
+                        </li>
+                        <li>
+                            <a href="#/manual/action_leaf"><img src="assets/icons/action.svg" width="18px"/></a>
+                            Retreat
+                        </li>
+                    </ul>
+                </li>
+            </ul>
+        </li>
+    </ul>
+</ul>
+
 ### Example 2: NPC Reactions
 An NPC in your game should react differently based on the player's reputation. You can use a Selector node with the following child nodes:
 
