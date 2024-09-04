@@ -19,7 +19,7 @@ Imagine you want a ranged enemy character trying to shoot you whenever he can wh
    1. Check if enemy can shoot
    2. Shoot
 
-The enemy will move to a location near player and try to shoot at same time, and if move action is successful or failure, the Simple Parallel node will termitate the child sequence node for shooting attempt, then return `SUCCESS` or `FAILURE` according to move action result.
+The enemy will move to a player and try to shoot at same time, and if move action is successful or failure, the Simple Parallel node will termitate the child sequence node for shooting attempt, then return `SUCCESS` or `FAILURE` according to move action result.
 
 <ul style="list-style: none;">
     <li>
