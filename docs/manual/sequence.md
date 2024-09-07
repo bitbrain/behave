@@ -41,25 +41,25 @@ The guard will follow this sequence, and if all actions are successful, the Sequ
     <li>
         <ul style="list-style: none;">
             <li>
-                <a href="#/manual/sequence"><img src="assets/icons/sequence.svg" width="18px"/></a>
+                <a href="#/manual/sequence?id=sequence-node"><img src="assets/icons/sequence.svg" width="18px"/></a>
                 SequenceComposite
             </li>
             <li>
                 <ul style="list-style: none;">
                     <li>
-                        <a href="#/manual/action_leaf"><img src="assets/icons/action.svg" width="18px"/></a>
+                        <a href="#/manual/action_leaf?id=action-leaf-node"><img src="assets/icons/action.svg" width="18px"/></a>
                         MoveToPointA
                     </li>
                     <li>
-                        <a href="#/manual/action_leaf"><img src="assets/icons/action.svg" width="18px"/></a>
+                        <a href="#/manual/action_leaf?id=action-leaf-node"><img src="assets/icons/action.svg" width="18px"/></a>
                         WaitFor2Seconds
                     </li>
                     <li>
-                        <a href="#/manual/action_leaf"><img src="assets/icons/action.svg" width="18px"/></a>
+                        <a href="#/manual/action_leaf?id=action-leaf-node"><img src="assets/icons/action.svg" width="18px"/></a>
                         MoveToPointB
                     </li>
                     <li>
-                        <a href="#/manual/action_leaf"><img src="assets/icons/action.svg" width="18px"/></a>
+                        <a href="#/manual/action_leaf?id=action-leaf-node"><img src="assets/icons/action.svg" width="18px"/></a>
                         WaitFor2Seconds2
                     </li>
                 </ul>
