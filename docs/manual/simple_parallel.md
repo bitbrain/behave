@@ -35,21 +35,21 @@ The enemy will move to a player and try to shoot at same time, and if move actio
             <li>
                 <ul style="list-style: none;">
                     <li>
-                        <a href="#/manual/action_leaf"><img src="assets/icons/action.svg" width="18px"/></a>
+                        <a href="#/manual/action_leaf?id=action-leaf-node"><img src="assets/icons/action.svg" width="18px"/></a>
                         MoveToPlayer
                     </li>
                     <li>
-                        <a href="#/manual/sequence"><img src="assets/icons/sequence.svg" width="18px"/></a>
+                        <a href="#/manual/sequence?id=sequence-node"><img src="assets/icons/sequence.svg" width="18px"/></a>
                         SequenceComposite
                     </li>
                     <li>
                         <ul style="list-style: none;">
                             <li>
-                                <a href="#/manual/condition_leaf"><img src="assets/icons/condition.svg" width="18px"/></a>
+                                <a href="#/manual/condition_leaf?id=condition-leaf"><img src="assets/icons/condition.svg" width="18px"/></a>
                                 CanShoot
                             </li>
                             <li>
-                                <a href="#/manual/action_leaf"><img src="assets/icons/action.svg" width="18px"/></a>
+                                <a href="#/manual/action_leaf?id=action-leaf-node"><img src="assets/icons/action.svg" width="18px"/></a>
                                 Shoot
                             </li>
                         </ul>
