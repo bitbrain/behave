@@ -10,7 +10,7 @@ Using behavior trees, Beehave makes it simple to create highly adaptive AI that 
 
 ### 🤖 Node based - build behavior trees within your scene tree
 
-Compose behavior trees in your scene and attach them to any node of your chosing.
+Compose behavior trees in your scene and attach them to any node of your choice.
 
 <img src="assets/beehave-demo-tree.png" width="450px"/>
 
