@@ -59,7 +59,7 @@ The enemy will choose the first successful option, and the Selector node will re
                 </li>
             </ul>
         </li>
-                <li>
+        <li>
             <ul style="list-style: none;">
                 <li>
                     <a href="#/manual/sequence?id=sequence-node"><img src="assets/icons/sequence.svg" width="18px"/></a>
