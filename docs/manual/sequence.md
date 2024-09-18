@@ -33,6 +33,44 @@ Imagine you want a guard character to follow a patrol route. You can use a Seque
 
 The guard will follow this sequence, and if all actions are successful, the Sequence node will return `SUCCESS`.
 
+<ul style="list-style: none;">
+    <li>
+        <img src="assets/icons/tree.svg" width="18px"/>
+        BeehaveTree
+    </li>
+    <li>
+        <ul style="list-style: none;">
+            <li>
+                <a href="#/manual/sequence?id=sequence-node"><img src="assets/icons/sequence.svg" width="18px"/></a>
+                SequenceComposite
+            </li>
+            <li>
+                <ul style="list-style: none;">
+                    <li>
+                        <a href="#/manual/action_leaf?id=action-leaf-node"><img src="assets/icons/action.svg" width="18px"/></a>
+                        MoveToPointA
+                    </li>
+                    <li>
+                        <a href="#/manual/action_leaf?id=action-leaf-node"><img src="assets/icons/action.svg" width="18px"/></a>
+                        WaitFor2Seconds
+                    </li>
+                    <li>
+                        <a href="#/manual/action_leaf?id=action-leaf-node"><img src="assets/icons/action.svg" width="18px"/></a>
+                        MoveToPointB
+                    </li>
+                    <li>
+                        <a href="#/manual/action_leaf?id=action-leaf-node"><img src="assets/icons/action.svg" width="18px"/></a>
+                        WaitFor2Seconds2
+                    </li>
+                </ul>
+            </li>
+        </ul>
+    </li>
+</ul>
+
+Instead of creating a custom action for waiting, you could use <a href="#/manual/decorators?id=delayer">Delayer</a> decorator.
+
+
 ### Example 2: NPC Conversation
 An NPC in your game should have a conversation with the player when they approach. You can use a Sequence node with the following child nodes:
 

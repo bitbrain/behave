@@ -14,7 +14,69 @@ A `Succeeder` node will always return a `SUCCESS` status code, no matter the out
 ## Inverter
 An `Inverter` node reverses the outcome of its child node. It returns `FAILURE` if its child returns a `SUCCESS` status code, and `SUCCESS` if its child returns a `FAILURE` status code. This is useful when you want to negate a condition or invert the result of an action.
 
-**Example:** An NPC is patrolling an area and should change its path if it *doesn't* detect an enemy.
+**Example:** Instead of creating separate conditions like "guards sees an enemy" and "guard doesn't see an enemy", you could create just 1, and then invert it.
+
+<ul style="list-style: none;">
+    <li>
+        <img src="assets/icons/tree.svg" width="18px"/>
+        BeehaveTree
+    </li>
+    <li>
+        <ul style="list-style: none;">
+        <li>
+            <a href="#/manual/selector?id=selector-node"><img src="assets/icons/selector.svg" width="18px"/></a>
+            SelectorComposite
+        </li>
+        <li>
+            <ul style="list-style: none;">
+                <li>
+                    <a href="#/manual/sequence?id=sequence-node"><img src="assets/icons/sequence.svg" width="18px"/></a>
+                    SequenceComposite
+                </li>
+                <li>
+                    <ul style="list-style: none;">
+                        <li>
+                            <a href="#/manual/decorators?id=inverter"><img src="assets/icons/inverter.svg" width="18px"/></a>
+                            InverterDecorator
+                        </li>
+                        <li>
+                            <ul style="list-style: none;">
+                                <li>
+                                    <a href="#/manual/condition_leaf?id=condition-leaf"><img src="assets/icons/condition.svg" width="18px"/></a>
+                                    SeesEnemy
+                                </li>
+                            </ul>
+                        </li>
+                        <li>
+                            <a href="#/manual/action_leaf?id=action-leaf-node"><img src="assets/icons/action.svg" width="18px"/></a>
+                            Patrol
+                        </li>
+                    </ul>
+                </li>
+            </ul>
+        </li>
+        <li>
+            <ul style="list-style: none;">
+                <li>
+                    <a href="#/manual/sequence?id=sequence-node"><img src="assets/icons/sequence.svg" width="18px"/></a>
+                    SequenceComposite2
+                </li>
+                <li>
+                    <ul style="list-style: none;">
+                        <li>
+                            <a href="#/manual/condition_leaf?id=condition-leaf"><img src="assets/icons/condition.svg" width="18px"/></a>
+                            SeesEnemy
+                        </li>
+                        <li>
+                            <a href="#/manual/action_leaf?id=action-leaf-node"><img src="assets/icons/action.svg" width="18px"/></a>
+                            Attack
+                        </li>
+                    </ul>
+                </li>
+            </ul>
+        </li>
+    </li>
+</ul>
 
 ## Limiter
 The `Limiter` node executes its `RUNNING` child a specified number of times (x). When the maximum number of ticks is reached, it returns a `FAILURE` status code. The limiter resets its counter after its child returns either `SUCCESS` or `FAILURE`.
@@ -45,3 +107,54 @@ The `Cooldown` node executes its child until it either returns `SUCCESS` or `FAI
 The `UntilFail` node executes its child and returns `RUNNING` as long as it returns either `RUNNING` or `SUCCESS`. If its child returns `FAILURE`, it will instead return `SUCCESS`.
 
 **Example:** A turret fires upon any NPC in range until it does not detect any more NPCs.
+
+<ul style="list-style: none;">
+    <li>
+        <img src="assets/icons/tree.svg" width="18px"/>
+        BeehaveTree
+    </li>
+    <li>
+        <ul style="list-style: none;">
+            <li>
+                <a href="#/manual/sequence?id=sequence-node"><img src="assets/icons/sequence.svg" width="18px"/></a>
+                SequenceComposite
+            </li>
+            <li>
+                <ul style="list-style: none;">
+                <li>
+                    <a href="#/manual/decorators?id=untilfail"><img src="assets/icons/until_fail.svg" width="18px"/></a>
+                    UntilFailDecorator
+                </li>
+                <li>
+                    <ul style="list-style: none;">
+                        <li>
+                            <a href="#/manual/sequence?id=sequence-node"><img src="assets/icons/sequence.svg" width="18px"/></a>
+                            SequenceComposite
+                        </li>
+                        <li>
+                            <ul style="list-style: none;">
+                                <li>
+                                    <a href="#/manual/condition_leaf?id=condition-leaf"><img src="assets/icons/condition.svg" width="18px"/></a>
+                                    DetectsNPCs
+                                </li>
+                                <li>
+                                    <a href="#/manual/action_leaf?id=action-leaf-node"><img src="assets/icons/action.svg" width="18px"/></a>
+                                    Shoot
+                                </li>
+                            </ul>
+                        </li>
+                    </ul>
+                </li>
+                <li>
+                    <a href="#/manual/sequence?id=sequence-node"><img src="assets/icons/sequence.svg" width="18px"/></a>
+                    NoOneLeftToShootSequence
+                </li>
+                <li>
+                    <ul style="list-style: none;">
+                        <li>...</li>
+                    </ul>
+                </li>
+            </li>
+        </ul>
+    </li>
+</ul>
