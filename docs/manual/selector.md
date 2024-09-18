@@ -59,31 +59,11 @@ The enemy will choose the first successful option, and the Selector node will re
                 </li>
             </ul>
         </li>
-        <li>
+                <li>
             <ul style="list-style: none;">
                 <li>
                     <a href="#/manual/sequence?id=sequence-node"><img src="assets/icons/sequence.svg" width="18px"/></a>
                     SequenceComposite2
-                </li>
-                <li>
-                    <ul style="list-style: none;">
-                        <li>
-                            <a href="#/manual/condition_leaf?id=condition-leaf"><img src="assets/icons/condition.svg" width="18px"/></a>
-                            IsPlayerClose
-                        </li>
-                        <li>
-                            <a href="#/manual/action_leaf?id=action-leaf-node"><img src="assets/icons/action.svg" width="18px"/></a>
-                            AttackPlayer
-                        </li>
-                    </ul>
-                </li>
-            </ul>
-        </li>
-        <li>
-            <ul style="list-style: none;">
-                <li>
-                    <a href="#/manual/sequence?id=sequence-node"><img src="assets/icons/sequence.svg" width="18px"/></a>
-                    SequenceComposite3
                 </li>
                 <li>
                     <ul style="list-style: none;">
@@ -103,8 +83,30 @@ The enemy will choose the first successful option, and the Selector node will re
                 </li>
             </ul>
         </li>
+        <li>
+            <ul style="list-style: none;">
+                <li>
+                    <a href="#/manual/sequence?id=sequence-node"><img src="assets/icons/sequence.svg" width="18px"/></a>
+                    SequenceComposite3
+                </li>
+                <li>
+                    <ul style="list-style: none;">
+                        <li>
+                            <a href="#/manual/condition_leaf?id=condition-leaf"><img src="assets/icons/condition.svg" width="18px"/></a>
+                            IsPlayerClose
+                        </li>
+                        <li>
+                            <a href="#/manual/action_leaf?id=action-leaf-node"><img src="assets/icons/action.svg" width="18px"/></a>
+                            AttackPlayer
+                        </li>
+                    </ul>
+                </li>
+            </ul>
+        </li>
     </ul>
 </ul>
+
+Note that "If the player is close and the enemy is low on health, retreat" sequence goes before "If the player is in range, attack the player". If you put them other way around, enemy would always keep attacking the player as SelectorSequence will always run first sequence that doesn't return `FAILURE`.
 
 ### Example 2: NPC Reactions
 An NPC in your game should react differently based on the player's reputation. You can use a Selector node with the following child nodes:
