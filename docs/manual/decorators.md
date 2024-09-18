@@ -116,28 +116,44 @@ The `UntilFail` node executes its child and returns `RUNNING` as long as it retu
     <li>
         <ul style="list-style: none;">
             <li>
-                <a href="#/manual/decorators?id=untilfail"><img src="assets/icons/until_fail.svg" width="18px"/></a>
-                UntilFailDecorator
+                <a href="#/manual/sequence?id=sequence-node"><img src="assets/icons/sequence.svg" width="18px"/></a>
+                SequenceComposite
             </li>
             <li>
                 <ul style="list-style: none;">
-                    <li>
-                        <a href="#/manual/sequence?id=sequence-node"><img src="assets/icons/sequence.svg" width="18px"/></a>
-                        SequenceComposite
-                    </li>
-                    <li>
-                        <ul style="list-style: none;">
-                            <li>
-                                <a href="#/manual/condition_leaf?id=condition-leaf"><img src="assets/icons/condition.svg" width="18px"/></a>
-                                DetectsNPCs
-                            </li>
-                            <li>
-                                <a href="#/manual/action_leaf?id=action-leaf-node"><img src="assets/icons/action.svg" width="18px"/></a>
-                                Shoot
-                            </li>
-                        </ul>
-                    </li>
-                </ul>
+                <li>
+                    <a href="#/manual/decorators?id=untilfail"><img src="assets/icons/until_fail.svg" width="18px"/></a>
+                    UntilFailDecorator
+                </li>
+                <li>
+                    <ul style="list-style: none;">
+                        <li>
+                            <a href="#/manual/sequence?id=sequence-node"><img src="assets/icons/sequence.svg" width="18px"/></a>
+                            SequenceComposite
+                        </li>
+                        <li>
+                            <ul style="list-style: none;">
+                                <li>
+                                    <a href="#/manual/condition_leaf?id=condition-leaf"><img src="assets/icons/condition.svg" width="18px"/></a>
+                                    DetectsNPCs
+                                </li>
+                                <li>
+                                    <a href="#/manual/action_leaf?id=action-leaf-node"><img src="assets/icons/action.svg" width="18px"/></a>
+                                    Shoot
+                                </li>
+                            </ul>
+                        </li>
+                    </ul>
+                </li>
+                <li>
+                    <a href="#/manual/sequence?id=sequence-node"><img src="assets/icons/sequence.svg" width="18px"/></a>
+                    NoOneLeftToShootSequence
+                </li>
+                <li>
+                    <ul style="list-style: none;">
+                        <li>...</li>
+                    </ul>
+                </li>
             </li>
         </ul>
     </li>
