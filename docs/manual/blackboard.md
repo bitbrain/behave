@@ -4,12 +4,12 @@ The `Blackboard` is a useful object in Behavior Trees, designed to store and sha
 
 ## Purpose of Blackboards
 
-- **Centralized Data Management**: 
+- **Centralized Data Management**:
   - Blackboards act as a centralized repository for data in behaviour trees.
   - They offer an organized way to store and manage data, avoiding the complexity of passing variables directly to nodes.
   - This approach ensures that all nodes can access and modify the same set of data, maintaining consistency across the behavior tree.
 
-- **Consistency and Synchronization**: 
+- **Consistency and Synchronization**:
   - Using a blackboard ensures that data remains consistent across all nodes.
   - It enables synchronized behaviors among different game characters or objects, as they all refer to the same data source.
 
@@ -18,7 +18,7 @@ The `Blackboard` is a useful object in Behavior Trees, designed to store and sha
 
 By default, every `BeehaveTree` manages its own instance of a blackboard. However, you can also create a new blackboard in your scene and reference it via the blackboard property on the Beehave tree. This approach allows you to share the same blackboard between multiple trees, promoting reusability and simplifying data management.
 
-> **Global vs Local Scope in Blackboards**: 
+> **Global vs Local Scope in Blackboards**:
 >   - When a value is set on a shared blackboard, it becomes 'global' and affects all trees referencing that blackboard.
 >  - However, using a custom blackboard name (as the 3rd argument in the key-value pair) allows for localizing the scope. This means changes to the blackboard will only affect the trees that use that specific custom name, enabling more controlled and isolated behaviors.
 
