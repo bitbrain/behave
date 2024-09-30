@@ -1,25 +1,25 @@
 # Simple Parallel Node
-The Simple Parallel node is a fundamental building block in Behavior Trees, used to execute two children at same time. It helps you run multiple actions simultaneously.Think of the Simple Parallel node as "While doing A, do B as well."
+The Simple Parallel node is a fundamental building block in Behavior Trees, used to execute two children at the same time. It helps you run multiple actions simultaneously. Think of the Simple Parallel node as "While doing A, do B as well".
 
 ## How does it work?
-Simple Parallel nodes will attampt to execute all chidren at same time and can only have exactly two children. First child as primary node, second child as secondary node.  
-This node will always report primary node's state, and continue tick while primary node return `RUNNING`. The state of secondary node will be ignored and executed like a subtree.  
-If primary node return `SUCCESS` or `FAILURE`, this node will interrupt secondary node and return primary node's result.  
-If this node is running under delay mode, it will wait seconday node finish its action after primary node terminates.
+Simple Parallel nodes will attempt to execute all children at the same time and can only have exactly two children. First child as the primary node, second child as the secondary node.
+This node will always report the primary node's state, and continue ticking while the primary node returns `RUNNING`. The state of the secondary node will be ignored and executed like a subtree.
+If the primary node returns `SUCCESS` or `FAILURE`, this node will interrupt the secondary node and return the primary node's result.
+If this node is running under delay mode, it will wait for the secondary node to finish its action after the primary node terminates.
 
 
 ## Example Scenarios
 Here are some example scenarios to help you understand the Sequence node better:
 
-### Example: While attacking the enemy, move toward the enemy 
-Imagine you want a ranged enemy character trying to shoot you whenever he can while to move towards you. You can use a Simple Parallel node with the following child nodes architecture:
+### Example: While attacking the enemy, move toward the enemy
+Imagine you want a ranged enemy character trying to shoot you whenever they can while moving towards you. You can use a Simple Parallel node with the following child nodes architecture:
 
 1. Move to player
 2. Sequence Node
    1. Check if enemy can shoot
    2. Shoot
 
-The enemy will move to a player and try to shoot at same time, and if move action is successful or failure, the Simple Parallel node will termitate the child sequence node for shooting attempt, then return `SUCCESS` or `FAILURE` according to move action result.
+The enemy will move to the player and try to shoot at the same time. If the move action is successful or fails, the Simple Parallel node will terminate the child sequence node for the shooting attempt, then return `SUCCESS` or `FAILURE` according to the move action result.
 
 <ul style="list-style: none;">
     <li>
@@ -60,4 +60,4 @@ The enemy will move to a player and try to shoot at same time, and if move actio
     </li>
 </ul>
 
-Simple Parallel can be nested to create complex behaviors while it's not suggested, because too much nesting would make it hard to maintain your behavior tree.
+Although Simple Parallel can be nested to create complex behaviors, it is not recommended, as too much nesting may make it difficult to maintain your behavior tree.

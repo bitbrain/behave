@@ -106,7 +106,7 @@ The enemy will choose the first successful option, and the Selector node will re
     </ul>
 </ul>
 
-Note that "If the player is close and the enemy is low on health, retreat" sequence goes before "If the player is in range, attack the player". If you put them other way around, enemy would always keep attacking the player as SelectorSequence will always run first sequence that doesn't return `FAILURE`.
+Note, that the "If the player is close and the enemy is low on health, retreat" sequence goes before "If the player is in range, attack the player". If you put them the other way around, the enemy would always keep attacking the player as SelectorSequence will always run the first sequence that doesn't return `FAILURE`.
 
 ### Example 2: NPC Reactions
 An NPC in your game should react differently based on the player's reputation. You can use a Selector node with the following child nodes:

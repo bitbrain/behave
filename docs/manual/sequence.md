@@ -68,7 +68,7 @@ The guard will follow this sequence, and if all actions are successful, the Sequ
     </li>
 </ul>
 
-Instead of creating a custom action for waiting, you could use <a href="#/manual/decorators?id=delayer">Delayer</a> decorator.
+Instead of creating a custom action for waiting, you could use the <a href="#/manual/decorators?id=delayer">Delayer</a> decorator.
 
 
 ### Example 2: NPC Conversation
