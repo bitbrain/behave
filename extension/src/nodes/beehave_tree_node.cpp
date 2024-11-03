@@ -45,6 +45,14 @@ BeehaveTickStatus BeehaveTreeNode::tick(Ref<BeehaveContext> context) {
 	return status;
 }
 
+BeehaveTreeNode* BeehaveTreeNode::cast_node(Node* node) const {
+	BeehaveTreeNode *tree_node = cast_to<BeehaveTreeNode>(node);
+	if (!tree_node) {
+		return nullptr;
+	}
+	return tree_node;
+}
+
 void BeehaveTreeNode::_bind_methods() {
 
 	GDVIRTUAL_BIND(_tick, "context");

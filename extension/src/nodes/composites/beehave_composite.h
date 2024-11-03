@@ -1,5 +1,5 @@
 /**************************************************************************/
-/*  beehave_tree_node.h                                                   */
+/*  beehave_composite.h                                                   */
 /**************************************************************************/
 /*                         This file is part of:                          */
 /*                               BEEHAVE                                  */
@@ -27,47 +27,20 @@
 /* SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.                 */
 /**************************************************************************/
 
-#ifndef BEEHAVE_TREE_NODE_H
-#define BEEHAVE_TREE_NODE_H
+#ifndef BEEHAVE_COMPOSITE_H
+#define BEEHAVE_COMPOSITE_H
 
-#include "beehave_context.h"
-#include <classes/node.hpp>
-#include <classes/global_constants.hpp>
-#include <classes/ref.hpp>
-#include <core/binder_common.hpp>
-#include <variant/variant.hpp>
-#include <core/gdvirtual.gen.inc>
-
-namespace godot {
-	enum BeehaveTickStatus {
-		PENDING = -1,
-		SUCCESS = 0,
-		FAILURE = 1,
-		RUNNING = 2
-	};
-
-} //namespace godot
-
-VARIANT_ENUM_CAST(BeehaveTickStatus);
+#include "nodes/beehave_tree_node.h"
 
 namespace godot {
 
-class BeehaveTreeNode : public Node {
-	GDCLASS(BeehaveTreeNode, Node);
-
-protected:
-	static void _bind_methods();
-	BeehaveTreeNode *cast_node(Node* node) const;
+class BeehaveComposite : public BeehaveTreeNode {
+GDCLASS(BeehaveComposite, BeehaveTreeNode);
 
 public:
-	BeehaveTreeNode();
-	~BeehaveTreeNode();
-
-	virtual BeehaveTickStatus tick(Ref<BeehaveContext> context);
-
-	GDVIRTUAL1RC(BeehaveTickStatus, _tick, Ref<BeehaveContext>);
+	BeehaveComposite();
+	~BeehaveComposite();
 };
-
 } //namespace godot
 
-#endif // BEEHAVE_TREE_NODE_H
+#endif //BEEHAVE_COMPOSITE_H
