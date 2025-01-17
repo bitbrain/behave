@@ -164,7 +164,7 @@ func process_tick(instance_id: int, status: int) -> void:
 		node.text = "Status: %s" % get_status(status)
 		node.set_status(status)
 		node.set_meta("status", status)
-		if status == 0 or status == 2:
+		if status == BeehaveNode.SUCCESS or status == BeehaveNode.RUNNING:
 			if not active_nodes.has(node.name):
 				active_nodes.push_back(node.name)
 
@@ -176,13 +176,13 @@ func process_end(instance_id: int) -> void:
 	for child in _get_child_nodes():
 		var status := child.get_meta("status", -1)
 		match status:
-			0:
+			BeehaveNode.SUCCESS:
 				active_nodes.erase(child.name)
 				child.set_color(SUCCESS_COLOR)
-			1:
+			BeehaveNode.FAILURE:
 				active_nodes.erase(child.name)
 				child.set_color(INACTIVE_COLOR)
-			2:
+			BeehaveNode.RUNNING:
 				child.set_color(ACTIVE_COLOR)
 			_:
 				child.text = " "
@@ -213,7 +213,7 @@ func _get_connection_line(from_position: Vector2, to_position: Vector2) -> Packe
 
 func _get_elbow_connection_line(from_position: Vector2, to_position: Vector2) -> PackedVector2Array:
 	var points: PackedVector2Array
-	
+
 	points.push_back(from_position)
 
 	var mid_position := ((to_position + from_position) / 2).round()
@@ -225,7 +225,7 @@ func _get_elbow_connection_line(from_position: Vector2, to_position: Vector2) ->
 		points.push_back(Vector2(to_position.x, mid_position.y))
 
 	points.push_back(to_position)
-	
+
 	return points
 
 
@@ -265,12 +265,12 @@ func _draw() -> void:
 		var input_port_position: Vector2
 
 		var scale_factor: float = from.get_rect().size.x / from.size.x
-		
+
 		var line := _get_elbow_connection_line(
 			from.position + from.get_custom_output_port_position(horizontal_layout) * scale_factor,
 			to.position + to.get_custom_input_port_position(horizontal_layout) * scale_factor
 		)
-		
+
 		var curve = Curve2D.new()
 		for l in line:
 			curve.add_point(l)

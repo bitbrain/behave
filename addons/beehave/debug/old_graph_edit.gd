@@ -162,7 +162,7 @@ func process_tick(instance_id: int, status: int) -> void:
 		node.text = "Status: %s" % get_status(status)
 		node.set_status(status)
 		node.set_meta("status", status)
-		if status == 0 or status == 2:
+		if status == BeehaveNode.SUCCESS or status == BeehaveNode.RUNNING:
 			if not active_nodes.has(node.name):
 				active_nodes.push_back(node.name)
 
@@ -174,13 +174,13 @@ func process_end(instance_id: int) -> void:
 	for child in _get_child_nodes():
 		var status := child.get_meta("status", -1)
 		match status:
-			0:
+			BeehaveNode.SUCCESS:
 				active_nodes.erase(child.name)
 				child.set_color(SUCCESS_COLOR)
-			1:
+			BeehaveNode.FAILURE:
 				active_nodes.erase(child.name)
 				child.set_color(INACTIVE_COLOR)
-			2:
+			BeehaveNode.RUNNING:
 				child.set_color(ACTIVE_COLOR)
 			_:
 				child.text = " "

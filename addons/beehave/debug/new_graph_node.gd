@@ -50,7 +50,7 @@ func _init(frames:RefCounted, horizontal: bool = false) -> void:
 func _ready() -> void:
 	custom_minimum_size = Vector2(50, 50) * BeehaveUtils.get_editor_scale()
 	draggable = false
-	
+
 	add_theme_color_override("close_color", Color.TRANSPARENT)
 	add_theme_icon_override("close", ImageTexture.new())
 
@@ -119,9 +119,9 @@ func get_custom_output_port_position(horizontal: bool) -> Vector2:
 
 func set_status(status: int) -> void:
 	match status:
-		0: _set_stylebox_overrides(frames.panel_success, frames.titlebar_success)
-		1: _set_stylebox_overrides(frames.panel_failure, frames.titlebar_failure)
-		2: _set_stylebox_overrides(frames.panel_running, frames.titlebar_running)
+		BeehaveNode.SUCCESS: _set_stylebox_overrides(frames.panel_success, frames.titlebar_success)
+		BeehaveNode.FAILURE: _set_stylebox_overrides(frames.panel_failure, frames.titlebar_failure)
+		BeehaveNode.RUNNING: _set_stylebox_overrides(frames.panel_running, frames.titlebar_running)
 		_: _set_stylebox_overrides(frames.panel_normal, frames.titlebar_normal)
 
 
