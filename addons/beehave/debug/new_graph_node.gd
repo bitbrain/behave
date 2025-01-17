@@ -40,6 +40,7 @@ var titlebar_hbox: HBoxContainer
 
 var frames: RefCounted
 var horizontal: bool = false
+var panels_tween: Tween
 
 
 func _init(frames:RefCounted, horizontal: bool = false) -> void:
@@ -50,7 +51,7 @@ func _init(frames:RefCounted, horizontal: bool = false) -> void:
 func _ready() -> void:
 	custom_minimum_size = Vector2(50, 50) * BeehaveUtils.get_editor_scale()
 	draggable = false
-	
+
 	add_theme_color_override("close_color", Color.TRANSPARENT)
 	add_theme_icon_override("close", ImageTexture.new())
 
@@ -147,8 +148,38 @@ func set_output_color(color: Color) -> void:
 
 
 func _set_stylebox_overrides(panel_stylebox: StyleBox, titlebar_stylebox: StyleBox) -> void:
-	add_theme_stylebox_override("panel", panel_stylebox)
-	add_theme_stylebox_override("titlebar", titlebar_stylebox)
+	# First update and any status change gets immediate panel update
+	if not has_theme_stylebox_override("panel") or panel_stylebox != frames.panel_normal:
+		if panels_tween:
+			panels_tween.kill()
+			panels_tween = null
+
+		add_theme_stylebox_override("panel", panel_stylebox)
+		add_theme_stylebox_override("titlebar", titlebar_stylebox)
+		return
+
+	# Don't need to do anything if we're already tweening back to normal
+	if panels_tween:
+		return
+
+	# Don't need to do anything if our colors are already the same as a normal
+	var cur_panel_stylebox: StyleBox = get_theme_stylebox("panel")
+	var cur_titlebar_stylebox: StyleBox = get_theme_stylebox("titlebar")
+	if cur_panel_stylebox.bg_color == frames.panel_normal.bg_color:
+		return
+
+	# Apply a duplicate of our current panels that we can tween
+	add_theme_stylebox_override("panel", cur_panel_stylebox.duplicate())
+	add_theme_stylebox_override("titlebar", cur_titlebar_stylebox.duplicate())
+	cur_panel_stylebox = get_theme_stylebox("panel")
+	cur_titlebar_stylebox = get_theme_stylebox("titlebar")
+
+	# Going back to normal is a fade
+	panels_tween = create_tween()
+	panels_tween.parallel().tween_property(cur_panel_stylebox, "bg_color", panel_stylebox.bg_color, 1.0)
+	panels_tween.parallel().tween_property(cur_panel_stylebox, "border_color", panel_stylebox.border_color, 1.0)
+	panels_tween.parallel().tween_property(cur_titlebar_stylebox, "bg_color", panel_stylebox.bg_color, 1.0)
+	panels_tween.parallel().tween_property(cur_titlebar_stylebox, "border_color", panel_stylebox.border_color, 1.0)
 
 
 func _on_size_changed():
