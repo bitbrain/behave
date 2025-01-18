@@ -117,11 +117,11 @@ func set_status(status: int) -> void:
 
 func _get_stylebox(status: int) -> StyleBox:
 	match status:
-		0:
+		BeehaveNode.SUCCESS:
 			return frames.success
-		1:
+		BeehaveNode.FAILURE:
 			return frames.failure
-		2:
+		BeehaveNode.RUNNING:
 			return frames.running
 		_:
 			return frames.normal
