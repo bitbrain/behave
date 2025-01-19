@@ -19,7 +19,7 @@ func tick(actor: Node, blackboard: Blackboard) -> int:
 		if c != running_child:
 			c.before_run(actor, blackboard)
 
-		var response = c.tick(actor, blackboard)
+		var response: int = c.tick(actor, blackboard)
 		if can_send_message(blackboard):
 			BeehaveDebuggerMessages.process_tick(c.get_instance_id(), response)
 
@@ -62,7 +62,7 @@ func _reset() -> void:
 
 ## Changes `running_action` and `running_child` after the node finishes executing.
 func _cleanup_running_task(finished_action: Node, actor: Node, blackboard: Blackboard):
-	var blackboard_name = str(actor.get_instance_id())
+	var blackboard_name: String = str(actor.get_instance_id())
 	if finished_action == running_child:
 		running_child = null
 		if finished_action == blackboard.get_value("running_action", null, blackboard_name):

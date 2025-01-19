@@ -6,12 +6,12 @@ class_name AlwaysFailDecorator extends Decorator
 
 
 func tick(actor: Node, blackboard: Blackboard) -> int:
-	var c = get_child(0)
+	var c: BeehaveNode = get_child(0)
 
 	if c != running_child:
 		c.before_run(actor, blackboard)
 
-	var response = c.tick(actor, blackboard)
+	var response: int = c.tick(actor, blackboard)
 	if can_send_message(blackboard):
 		BeehaveDebuggerMessages.process_tick(c.get_instance_id(), response)
 

@@ -39,12 +39,12 @@ func _get_configuration_warnings() -> PackedStringArray:
 
 func tick(actor, blackboard: Blackboard):
 	for c in get_children():
-		var node_index = c.get_index()
+		var node_index: int = c.get_index()
 		if node_index == 0 and not main_task_finished:
 			if c != running_child:
 				c.before_run(actor, blackboard)
 
-			var response = c.tick(actor, blackboard)
+			var response: int = c.tick(actor, blackboard)
 			if can_send_message(blackboard):
 				BeehaveDebuggerMessages.process_tick(c.get_instance_id(), response)
 
