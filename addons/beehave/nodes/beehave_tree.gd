@@ -189,13 +189,13 @@ func _process_internally() -> void:
 	blackboard.set_value("can_send_message", _can_send_message)
 
 	if _can_send_message:
-		BeehaveDebuggerMessages.process_begin(get_instance_id())
+		BeehaveDebuggerMessages.process_begin(get_instance_id(), blackboard.get_debug_data())
 
 	if self.get_child_count() == 1:
 		tick()
 
 	if _can_send_message:
-		BeehaveDebuggerMessages.process_end(get_instance_id())
+		BeehaveDebuggerMessages.process_end(get_instance_id(), blackboard.get_debug_data())
 
 	# Check the cost for this frame and save it for metric report
 	_process_time_metric_value = Time.get_ticks_usec() - start_time
@@ -210,8 +210,8 @@ func tick() -> int:
 
 	status = child.tick(actor, blackboard)
 	if _can_send_message:
-		BeehaveDebuggerMessages.process_tick(child.get_instance_id(), status)
-		BeehaveDebuggerMessages.process_tick(get_instance_id(), status)
+		BeehaveDebuggerMessages.process_tick(child.get_instance_id(), status, blackboard.get_debug_data())
+		BeehaveDebuggerMessages.process_tick(get_instance_id(), status, blackboard.get_debug_data())
 
 	# Clear running action if nothing is running
 	if status != RUNNING:
