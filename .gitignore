@@ -4,6 +4,8 @@
 **/*.import
 export.cfg
 export_presets.cfg
+addons/gdUnit4/tmp-update/
+
 
 # Mono-specific ignores
 .mono/
