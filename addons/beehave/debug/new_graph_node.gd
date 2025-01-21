@@ -1,6 +1,7 @@
 @tool
 extends GraphNode
 
+signal blackboard_updated
 
 const BeehaveUtils := preload("res://addons/beehave/utils/utils.gd")
 
@@ -27,6 +28,11 @@ const PORT_RIGHT_ICON := preload("icons/port_right.svg")
 		icon = value
 		if icon_rect:
 			icon_rect.texture = value
+
+@export var blackboard: Dictionary:
+	set(value):
+		blackboard = value
+		blackboard_updated.emit()
 
 var layout_size: float:
 	get:

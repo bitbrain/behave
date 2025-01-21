@@ -15,16 +15,16 @@ static func unregister_tree(instance_id: int) -> void:
 		EngineDebugger.send_message("beehave:unregister_tree", [instance_id])
 
 
-static func process_tick(instance_id: int, status: int) -> void:
+static func process_tick(instance_id: int, status: int, blackboard: Dictionary = {}) -> void:
 	if can_send_message():
-		EngineDebugger.send_message("beehave:process_tick", [instance_id, status])
+		EngineDebugger.send_message("beehave:process_tick", [instance_id, status, blackboard])
 
 
-static func process_begin(instance_id: int) -> void:
+static func process_begin(instance_id: int, blackboard: Dictionary = {}) -> void:
 	if can_send_message():
-		EngineDebugger.send_message("beehave:process_begin", [instance_id])
+		EngineDebugger.send_message("beehave:process_begin", [instance_id, blackboard])
 
 
-static func process_end(instance_id: int) -> void:
+static func process_end(instance_id: int, blackboard: Dictionary = {}) -> void:
 	if can_send_message():
-		EngineDebugger.send_message("beehave:process_end", [instance_id])
+		EngineDebugger.send_message("beehave:process_end", [instance_id, blackboard])

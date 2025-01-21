@@ -23,7 +23,7 @@ func tick(actor: Node, blackboard: Blackboard) -> int:
 		var response: int = child.tick(actor, blackboard)
 
 		if can_send_message(blackboard):
-			BeehaveDebuggerMessages.process_tick(child.get_instance_id(), response)
+			BeehaveDebuggerMessages.process_tick(child.get_instance_id(), response, blackboard.get_debug_data())
 
 		if child is ConditionLeaf:
 			blackboard.set_value("last_condition", child, str(actor.get_instance_id()))

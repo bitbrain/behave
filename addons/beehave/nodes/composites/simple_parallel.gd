@@ -46,7 +46,7 @@ func tick(actor, blackboard: Blackboard):
 
 			var response: int = c.tick(actor, blackboard)
 			if can_send_message(blackboard):
-				BeehaveDebuggerMessages.process_tick(c.get_instance_id(), response)
+				BeehaveDebuggerMessages.process_tick(c.get_instance_id(), response, blackboard.get_debug_data())
 
 			delayed_result = response
 			match response:

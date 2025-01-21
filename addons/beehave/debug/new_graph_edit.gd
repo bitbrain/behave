@@ -150,7 +150,7 @@ func get_status(status: int) -> String:
 	return "RUNNING"
 
 
-func process_begin(instance_id: int) -> void:
+func process_begin(instance_id: int, blackboard = null) -> void:
 	if not _is_same_tree(instance_id):
 		return
 
@@ -158,18 +158,19 @@ func process_begin(instance_id: int) -> void:
 		child.set_meta("status", -1)
 
 
-func process_tick(instance_id: int, status: int) -> void:
+func process_tick(instance_id: int, status: int, blackboard = null) -> void:
 	var node := get_node_or_null(str(instance_id))
 	if node:
 		node.text = "Status: %s" % get_status(status)
 		node.set_status(status)
 		node.set_meta("status", status)
+		node.blackboard = blackboard
 		if status == BeehaveNode.SUCCESS or status == BeehaveNode.RUNNING:
 			if not active_nodes.has(node.name):
 				active_nodes.push_back(node.name)
 
 
-func process_end(instance_id: int) -> void:
+func process_end(instance_id: int, blackboard = null) -> void:
 	if not _is_same_tree(instance_id):
 		return
 

@@ -28,12 +28,12 @@ func tick(actor: Node, blackboard: Blackboard) -> int:
 		blackboard.set_value(cache_key, total_time, str(actor.get_instance_id()))
 
 		if can_send_message(blackboard):
-			BeehaveDebuggerMessages.process_tick(self.get_instance_id(), response)
+			BeehaveDebuggerMessages.process_tick(self.get_instance_id(), response, blackboard.get_debug_data())
 	else:
 		response = c.tick(actor, blackboard)
 
 		if can_send_message(blackboard):
-			BeehaveDebuggerMessages.process_tick(c.get_instance_id(), response)
+			BeehaveDebuggerMessages.process_tick(c.get_instance_id(), response, blackboard.get_debug_data())
 
 		if c is ConditionLeaf:
 			blackboard.set_value("last_condition", c, str(actor.get_instance_id()))

@@ -49,3 +49,6 @@ func has_value(key: Variant, blackboard_name: String = DEFAULT) -> bool:
 func erase_value(key: Variant, blackboard_name: String = DEFAULT) -> void:
 	if _data.has(blackboard_name):
 		_data[blackboard_name][key] = null
+
+func get_debug_data() -> Dictionary:
+	return _data
