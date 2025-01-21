@@ -14,9 +14,9 @@ class_name DelayDecorator
 
 
 func tick(actor: Node, blackboard: Blackboard) -> int:
-	var c = get_child(0)
-	var total_time = blackboard.get_value(cache_key, 0.0, str(actor.get_instance_id()))
-	var response
+	var c: BeehaveNode = get_child(0)
+	var total_time: float = blackboard.get_value(cache_key, 0.0, str(actor.get_instance_id()))
+	var response: int
 
 	if c != running_child:
 		c.before_run(actor, blackboard)

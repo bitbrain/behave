@@ -13,7 +13,7 @@ func tick(actor: Node, blackboard: Blackboard) -> int:
 		if c != running_child:
 			c.before_run(actor, blackboard)
 
-		var response = c.tick(actor, blackboard)
+		var response: int = c.tick(actor, blackboard)
 		if can_send_message(blackboard):
 			BeehaveDebuggerMessages.process_tick(c.get_instance_id(), response)
 
