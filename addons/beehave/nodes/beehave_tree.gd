@@ -30,6 +30,11 @@ signal tree_disabled
 ## tick() runs every frame.
 @export var tick_rate: int = 1
 
+## If the tree should opt into time slicing.  If enabled, the tree will not
+## execute it's own ticks directly.  It will instead push its ticks
+## to a global queue where they will be executed as resources allow
+@export var time_slice : bool = false
+
 ## An optional node path this behavior tree should apply to.
 @export_node_path var actor_node_path: NodePath:
 	set(anp):
@@ -96,6 +101,8 @@ signal tree_disabled
 
 var status: int = -1
 var last_tick: int = 0
+
+var tick_queued : bool = false
 
 var _internal_blackboard: Blackboard
 var _process_time_metric_name: String
@@ -192,7 +199,11 @@ func _process_internally() -> void:
 		BeehaveDebuggerMessages.process_begin(get_instance_id(), blackboard.get_debug_data())
 
 	if self.get_child_count() == 1:
-		tick()
+		if not time_slice:
+			tick()
+		elif not tick_queued:
+			BeehaveTimeSlicer.tick_queue.push_back(Callable(self, "tick"))
+			tick_queued = true
 
 	if _can_send_message:
 		BeehaveDebuggerMessages.process_end(get_instance_id(), blackboard.get_debug_data())
@@ -202,6 +213,8 @@ func _process_internally() -> void:
 
 
 func tick() -> int:
+	tick_queued = false
+
 	if actor == null or get_child_count() == 0:
 		return FAILURE
 	var child := self.get_child(0)

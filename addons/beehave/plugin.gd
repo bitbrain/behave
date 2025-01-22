@@ -10,6 +10,7 @@ func _init():
 	name = "BeehavePlugin"
 	add_autoload_singleton("BeehaveGlobalMetrics", "metrics/beehave_global_metrics.gd")
 	add_autoload_singleton("BeehaveGlobalDebugger", "debug/global_debugger.gd")
+	add_autoload_singleton("BeehaveTimeSlicer", "time_slicer/beehave_time_slicer.gd")
 	print("Beehave initialized!")
 
 
@@ -24,3 +25,6 @@ func _enter_tree() -> void:
 
 func _exit_tree() -> void:
 	remove_debugger_plugin(editor_debugger)
+	remove_autoload_singleton("BeehaveGlobalMetrics")
+	remove_autoload_singleton("BeehaveGlobalDebugger")
+	remove_autoload_singleton("BeehaveTimeSlicer")
